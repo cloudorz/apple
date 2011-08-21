@@ -11,7 +11,7 @@ import tornado.ioloop
 
 from tornado.options import define, options
 
-from apps import pages
+from .apps import pages
 
 define("port", default=8888, help="run on the given port", type=int)
 #define("mysql_host", default="127.0.0.1:3306", help="blog database host")
