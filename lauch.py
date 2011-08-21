@@ -32,6 +32,15 @@ class AppleApplicaiton(tornado.web.Applicaiton):
                 cookie_secret='c8f48f9777f411e09fcd109add59054a',
                 login_url='/login',
                 )
-        super(Applicaiton, self).__init__(handers, **settings)
+        super(Applicaiton, self).__init__(handlers, **settings)
         # TODO init sqlalchemy connection
         self.rs= None
+
+def main():
+    tornado.options.parse_command_line()
+    app = AppleApplicaiton()
+    app.listen(options.port)
+    tornado.ioloop.IOLoop.instance().start()
+
+if __name__ == '__main__':
+    main()
