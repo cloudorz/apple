@@ -1,0 +1,6 @@
+env
+.DS_Store
+*.py[co]
+*.sql
+*.db
+.svn
