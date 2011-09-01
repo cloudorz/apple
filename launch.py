@@ -11,9 +11,6 @@ import tornado.ioloop
 
 from tornado.options import define, options
 
-from apps import pages
-from utils import uimodules
-
 define('port', default=8888, help="run on the given port", type=int)
 #define("mysql_host", default="127.0.0.1:3306", help="blog database host")
 #define("mysql_database", default="blog", help="blog database name")
@@ -31,7 +28,6 @@ class Application(tornado.web.Application):
                 # registraction
                 ]
         settings = dict(
-                ui_moduels='uimodules',
                 site_name=u"Help anyone",
                 static_path=os.path.join(os.path.dirname(__file__), 'static'),
                 template_path=os.path.join(os.path.dirname(__file__), 'templates'),
