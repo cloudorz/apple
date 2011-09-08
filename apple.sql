@@ -6,20 +6,19 @@ ALTER DATABASE CHARACTER SET "utf8";
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    phone VARCHAR(11) NOT NULL UNIQUE,
+    phone BIGINT NOT NULL UNIQUE,
     password VARCHAR(64) NOT NULL,
     name VARCHAR(20) NOT NULL,
     avatar VARCHAR(100) NOT NULL,
     token VARCHAR(64) NOT NULL,
-    last_time DATETIME DEFAULT '1971-1-1 00:00:00',
-    last_longitude DOUBLE DEFAULT 0.0,
-    last_latitude DOUBLE DEFAULT 0.0,
-    loud_num INT DEFAULT 0,
-    distance FLOAT NULL,
+    last_lon DOUBLE NOT NULL DEFAULT 0,
+    last_lat DOUBLE NOT NULL DEFAULT 0,
+    /*loud_num INT NOT NULL DEFAULT 0,*/
+    radius FLOAT NULL,
     is_admin TINYINT(1) NOT NULL DEFAULT 0,
     block TINYINT(1) NOT NULL DEFAULT 0,
-    updated DATETIME,
-    created DATETIME
+    updated DATETIME NOT NULL,
+    created DATETIME NOT NULL
 );
 
 DROP TABLE IF EXISTS louds;
@@ -27,10 +26,11 @@ CREATE TABLE louds (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id),
     content VARCHAR(70) NOT NULL,
-    created DATETIME,
-    grade SMALLINT DEFAULT 5,
-    block TINYINT(1) NOT NULL DEFAULT 0
-    created DATETIME
+    lon DOUBLE NOT NULL,
+    lat DOUBLE NOT NULL,
+    grade SMALLINT(2) NOT NULL DEFAULT 5,
+    block TINYINT(1) NOT NULL DEFAULT 0,
+    created DATETIME NOT NULL
 );
 
 /*

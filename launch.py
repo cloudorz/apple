@@ -6,43 +6,66 @@ import os.path
 
 import tornado.web
 import tornado.httpserver
+import tornado.database
 import tornado.options
 import tornado.ioloop
 
 from tornado.options import define, options
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from apps.loud import LoudHandler, LoudSearchHandler
+from apps.user import UserHandler
+from utils.coredb import sql_db
+
+# server
 define('port', default=8888, help="run on the given port", type=int)
-define("mysql_host", default="127.0.0.1:3306", help="blog database host")
-define("mysql_database", default="blog", help="blog database name")
-define("mysql_user", default="blog", help="blog database user")
-define("mysql_password", default="blog", help="blog database password")
+
+# database
+define('db_uri', default="mysql://root:123@localhost/apple?charset=utf8", type=str, help="connect to mysql")
+
+# app key
+define("app_name", default="apple", help="app name")
+define("app_key", default="12345678", help="app key")
+define("app_secret", default="jkafldjaklfjda978-=-^**&", help="app secret")
 
 
+# main logic
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
+                (r'^/l/(\d+|)$', LoudHandler),
+                (r'^/l/list$', LoudSearchHandler),
+                (r'^/u/(\d{11}|)$', UserHandler),
                 #(r"/login", AuthLoginHandler),
                 #(r"/logout", AuthLogoutHandler),
                 # normal ye mian
-                (r"/", pages.HomeHandler),
+                #(r"/", pages.HomeHandler),
                 # registraction
                 ]
         settings = dict(
-                site_name=u"Help anyone",
                 static_path=os.path.join(os.path.dirname(__file__), 'static'),
-                xsrf_cookies=True,
+                xsrf_cookies=False,
                 cookie_secret='c8f48f9777f411e09fcd109add59054a',
-                login_url='/login',
                 debug=True,
                 )
         super(Application, self).__init__(handlers, **settings)
-        # TODO init sqlalchemy connection
-        #self.rs= None
+
+        # sqlalchemy session 'db'
+        self.db_session = (sessionmaker(bind=create_engine(options.db_uri)))()
+
 
 def main():
     tornado.options.parse_command_line()
     # ssl_options TODO
-    http_server = tornado.httpserver.HTTPServer(Application())
+    app = Application()
+
+    # init the modual
+    sql_db.init_app(app)
+
+    # server 
+    http_server = tornado.httpserver.HTTPServer(app)
     http_server.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
 
