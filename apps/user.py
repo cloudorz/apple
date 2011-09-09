@@ -18,8 +18,7 @@ class UserHandler(BaseRequestHandler):
         #print vars(user)
         if user:
             # TODO ower test
-            owner = True
-            if owner:
+            if user.ower_by(self.user):
                 # user get the (content longitude latitude grade created phone name avatar last_longitude last_atitude
                 # loud_num is_admin distance updated created)
                 info = user.to_dict(exclude=['id', 'password', 'token', 'block'])
@@ -39,19 +38,19 @@ class UserHandler(BaseRequestHandler):
         self.render_json("doing")
 
     def put(self, phn):
-        # FIXME if is owner
-        data = self.get_data()
         user = User.query.get_by_phone(phn)
+        if user and user.ower_by(self.user):
+            pass
+        data = self.get_data()
 
         # TODO #3 create the update key=value strings
         self.render_json(data)
 
     def delete(self, phn):
-        # FIXME if is owner
         user = User.query.get_by_phone(phn)
-        # delete all relation data
+        # PS: delete all relation data
         msg = {'status': 'fail'}
-        if user:
+        if user and user.ower_by(self.user):
             self.db.delete(user)
             msg = {'status': 'success'}
         # delete user data 

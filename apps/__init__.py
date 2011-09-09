@@ -5,6 +5,8 @@ import httplib, datetime
 import tornado.web
 from utils.escape import json_encode, json_decode
 
+from apps.models import User
+
 class BaseRequestHandler(tornado.web.RequestHandler):
     """the base RequestHandler for All."""
 
@@ -52,3 +54,7 @@ class BaseRequestHandler(tornado.web.RequestHandler):
     def render_json(self, data, **kwargs):
         self.set_header('Content-Type', 'Application/json')
         self.write(self.json(data))
+
+    def get_current_user(self):
+        tk = self.get_argument('tk')
+        self.user = User.get_by_token(tk)

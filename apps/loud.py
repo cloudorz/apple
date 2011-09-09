@@ -18,10 +18,9 @@ class LoudHandler(BaseRequestHandler):
         self.write("doing")
 
     def delete(self, lid):
-        # FIXME if is owner
         loud = Loud.query.get_by_key(lid)
         msg = {'status': 'fail'}
-        if user:
+        if loud and loud.ower_by(self.user):
             self.db.delete(loud)
             msg = {'status': 'success'}
 

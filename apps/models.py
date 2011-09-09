@@ -16,7 +16,7 @@ class UserQuery(BaseQuery):
         or Not exisit and Multi exisit return None
         '''
         try:
-            user = self.filter_by(phone=phn).one()
+            user = self.filter_by(phone=phn, block=False).one()
         except (NoResultFound, MultipleResultsFound):
             user = None
         return user
@@ -26,7 +26,7 @@ class UserQuery(BaseQuery):
         or Not exisit and Multi exisit return None
         '''
         try:
-            user = self.filter_by(token=token).one()
+            user = self.filter_by(token=token, block=False).one()
         except (NoResultFound, MultipleResultsFound):
             user = None
         return user
@@ -62,6 +62,13 @@ class User(Base):
     def __str__(self):
         return "<user:%s>" % self.phone
 
+    def can_save(self):
+        # TODO check all is ok
+        pass
+
+    def ower_by(self, u):
+        return u and u.id == self.id
+
 
 class Loud(Base):
     __tablename__ = 'louds'
@@ -87,6 +94,13 @@ class Loud(Base):
 
     def __str__(self):
         return "<loud:%s>" % self.id
+
+    def can_save(self):
+        # TODO check all is ok
+        pass
+
+    def ower_by(self, u):
+        return u and u.id == self.user_id
 
 
 # user's all louds number
