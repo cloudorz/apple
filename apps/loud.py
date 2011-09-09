@@ -5,10 +5,13 @@ from apps.models import User, Loud
 
 class LoudHandler(BaseRequestHandler):
     def get(self, lid):
-        # TODO #1
-        loud = Loud.query.get(lid)
-        print dir(loud)
-        self.render_json('ok')
+        loud = Loud.query.get_by_key(lid)
+        loud_dict = loud.to_dict(exclude=['id', 'user_id', 'block'])
+        # if you have line like this , 
+        # there is a bug "self.render_json(loud.to_dict())" will be Oops
+        loud_dict['user'] = loud.user.to_dict(exclude=['id', 'password', 'token', 'radius','updated', 'is_admin', 'block', 'created', 'last_lon', 'last_lat'])
+
+        self.render_json(loud_dict)
 
     def post(self, lid):
         # TODO #1
@@ -16,7 +19,7 @@ class LoudHandler(BaseRequestHandler):
 
     def delete(self, lid):
         # FIXME if is owner
-        loud = Loud.query.get(lid)
+        loud = Loud.query.get_by_key(lid)
         msg = {'status': 'fail'}
         if user:
             self.db.delete(loud)

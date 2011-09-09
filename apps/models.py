@@ -62,11 +62,6 @@ class User(Base):
     def __str__(self):
         return "<user:%s>" % self.phone
 
-    def to_json(self, data):
-        pass
-
-    def from_json(self, data):
-        pass
 
 class Loud(Base):
     __tablename__ = 'louds'
@@ -93,19 +88,6 @@ class Loud(Base):
     def __str__(self):
         return "<loud:%s>" % self.id
 
-    def to_dict(self, exclude=[]):
-        ''' convent the object to the dcit type
-        not contain the relating objects
-        '''
-        exclude.append('_sa_instance_state')
-        dict_obj = vars(self)
-        all(dict_obj.pop(e) for e in dict_obj.keys() if e in exclude)
-           
-        return dict_obj
-
-    def from_dict(self, data):
-        dict_obj = vars(self) # PS: not contain the user 
-        all(setattr(self, e, data[e]) for e in data.keys() if e in dict_obj)
 
 # user's all louds number
 User.loud_num = column_property(sql.select([sql.func.count(Loud.id)]).\

@@ -1,9 +1,9 @@
 # coding: utf-8
 
-import httplib
+import httplib, datetime
 
 import tornado.web
-from tornado.escape import json_encode, json_decode
+from utils.escape import json_encode, json_decode
 
 class BaseRequestHandler(tornado.web.RequestHandler):
     """the base RequestHandler for All."""
@@ -14,8 +14,8 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 
     # json pickle data methods
     def json(self, data):
-        # FIXME other exception data
-        return json_encode(data)
+        dthandler = lambda obj: str(obj) if isinstance(obj, (datetime.datetime, datetime.date)) else obj
+        return json_encode(data, default=dthandler)
 
     # decode json picle data 
     def dejson(self, data):

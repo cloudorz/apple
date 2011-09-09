@@ -14,24 +14,22 @@ class UserHandler(BaseRequestHandler):
         # TODO #3
         # empty '' string because for post create user
         user = User.query.get_by_phone(phn)
-        print dir(user)
-        print type(user.louds)
 
         #print vars(user)
-        for e in vars(user):
-            if isinstance(e, InstanceState):
-                print dir(e)
-                print vars(e)
-        print user.louds
-        # TODO ower test
-        owner = False
-        if owner:
-            # user get the (content longitude latitude grade created phone name avatar last_longitude last_atitude
-            # loud_num is_admin distance updated created)
-            info = self.owner_info(user)
+        if user:
+            # TODO ower test
+            owner = True
+            if owner:
+                # user get the (content longitude latitude grade created phone name avatar last_longitude last_atitude
+                # loud_num is_admin distance updated created)
+                info = user.to_dict(exclude=['id', 'password', 'token', 'block'])
+                info['loud_num'] = user.loud_num
+                info['louds'] = [e.to_dict(exclude=['id', 'user_id', 'block']) for e in user.louds]
+            else:
+                # non self get the (phone, name, avatar, last_longitude, last_atitude, updated)
+                info = user.to_dict(exclude=['id', 'password', 'token', 'radius', 'is_admin', 'block', 'created'])
         else:
-            # non self get the (phone, name, avatar, last_longitude, last_atitude, updated)
-            info = self.other_info(user)
+            info = None
 
         self.render_json(info)
 
@@ -59,12 +57,6 @@ class UserHandler(BaseRequestHandler):
         # delete user data 
         self.render_json(msg)
 
-    # data mainiupulate 
-    def owner_info(self, data):
-        return 'ok'
-
-    def other_info(self, data):
-        return 'ok'
 
 class AuthHandler(BaseRequestHandler):
     pass

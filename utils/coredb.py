@@ -19,7 +19,13 @@ sql_db = SQLAlchemy()
 class BaseQuery(Query):
     ''' common custom query
     '''
-    pass
+    def get_by_key(self, tid):
+        try:
+            obj = self.filter_by(id=tid, block=False).one()
+        except (NoResultFound, MultipleResultsFound):
+            obj = None
+        return obj
+
 
 class _QueryProperty(object):
     ''' User.query.
@@ -37,3 +43,20 @@ Base = declarative_base()
 Base.db = sql_db.db_session
 Base.query_class = BaseQuery
 Base.query = _QueryProperty()
+
+def obj_to_dict(self, exclude=[]):
+    ''' convent the object to the dcit type
+    not contain the relating objects
+    '''
+    exclude.append('_sa_instance_state')
+    dict_obj = vars(self).copy()
+    [dict_obj.pop(e) for e in dict_obj.keys() if e in exclude]
+       
+    return dict_obj
+
+def obj_from_dict(self, data):
+    dict_obj = vars(self).copy() # PS: not contain the user 
+    [setattr(self, e, data[e]) for e in data.keys() if e in dict_obj]
+
+Base.to_dict = obj_to_dict
+Base.from_dict = obj_from_dict
