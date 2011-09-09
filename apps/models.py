@@ -2,6 +2,8 @@
 
 import datetime
 
+from tornado.escape import json_encode, json_decode
+
 from sqlalchemy import sql, Column, String, Integer, Boolean, DateTime, Float, ForeignKey
 from sqlalchemy.orm import relation, backref, column_property
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
@@ -33,17 +35,16 @@ class LoudQuery(BaseQuery):
     pass
 
 class User(Base):
-
     __tablename__ = 'users'
 
     query_class = UserQuery
 
     id = Column(Integer, primary_key=True)
     phone = Column(Integer, unique=True)
-    password = Column(String(64))
+    password = Column(String(32))
     name = Column(String(20))
-    avatar = Column(String(100))
-    token = Column(String(64))
+    avatar = Column(String(100), nullable=True)
+    token = Column(String(64), nullable=True)
     last_lon = Column(Float, default=0)
     last_lat = Column(Float, default=0)
     radius = Column(Float, nullable=True, default=2.5)
@@ -56,10 +57,16 @@ class User(Base):
         super(User, self).__init__(*args, **kwargs)
 
     def __repr__(self):
-        return "<%s>" % self.phone
+        return "<user:%s>" % self.phone
 
     def __str__(self):
-        return "<%s>" % self.phone
+        return "<user:%s>" % self.phone
+
+    def to_json(self, data):
+        pass
+
+    def from_json(self, data):
+        pass
 
 class Loud(Base):
     __tablename__ = 'louds'
@@ -81,10 +88,24 @@ class Loud(Base):
         super(Loud, self).__init__(*args, **kwargs)
 
     def __repr__(self):
-        return "<%s>" % self.id
+        return "<loud:%s>" % self.id
 
     def __str__(self):
-        return "<%s>" % self.id
+        return "<loud:%s>" % self.id
+
+    def to_dict(self, exclude=[]):
+        ''' convent the object to the dcit type
+        not contain the relating objects
+        '''
+        exclude.append('_sa_instance_state')
+        dict_obj = vars(self)
+        all(dict_obj.pop(e) for e in dict_obj.keys() if e in exclude)
+           
+        return dict_obj
+
+    def from_dict(self, data):
+        dict_obj = vars(self) # PS: not contain the user 
+        all(setattr(self, e, data[e]) for e in data.keys() if e in dict_obj)
 
 # user's all louds number
 User.loud_num = column_property(sql.select([sql.func.count(Loud.id)]).\

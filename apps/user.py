@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from sqlalchemy.orm.state import InstanceState
 
 from apps import BaseRequestHandler
 from apps.models import User, Loud
@@ -13,7 +14,15 @@ class UserHandler(BaseRequestHandler):
         # TODO #3
         # empty '' string because for post create user
         user = User.query.get_by_phone(phn)
+        print dir(user)
+        print type(user.louds)
 
+        #print vars(user)
+        for e in vars(user):
+            if isinstance(e, InstanceState):
+                print dir(e)
+                print vars(e)
+        print user.louds
         # TODO ower test
         owner = False
         if owner:

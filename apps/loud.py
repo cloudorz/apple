@@ -7,6 +7,7 @@ class LoudHandler(BaseRequestHandler):
     def get(self, lid):
         # TODO #1
         loud = Loud.query.get(lid)
+        print dir(loud)
         self.render_json('ok')
 
     def post(self, lid):
