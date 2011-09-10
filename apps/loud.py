@@ -50,6 +50,7 @@ class LoudSearchHandler(BaseRequestHandler):
 
     @authenticated
     def get(self):
-        # TODO #1 louds cycle set get
-        louds = Loud.query.order_by('created desc').limit(1000)
-        self.render_json("wait pls.")
+        louds = Loud.query.get_by_cycle(self.current_user)
+        loud_dicts = [e.to_dict() for e in louds]
+
+        self.render_json(loud_dicts)

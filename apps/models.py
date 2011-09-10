@@ -10,6 +10,8 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from utils.coredb import BaseQuery, Base
 
+# TODO #2 redis cache the user's loud-id set  and when signup cache the pre-user's phone number
+
 class UserQuery(BaseQuery):
     def get_by_phone(self, phn):
         ''' Get user from users table return the User object 
@@ -32,7 +34,9 @@ class UserQuery(BaseQuery):
         return user
 
 class LoudQuery(BaseQuery):
-    pass
+    def get_by_cycle(self, u):
+        # TODO #1 compute the loud cycle alr..
+        return self.filter_by(block=False).order_by('created desc').limit(1000)
 
 class User(Base):
     __tablename__ = 'users'
