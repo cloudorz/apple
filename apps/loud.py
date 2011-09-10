@@ -3,6 +3,7 @@
 from apps import BaseRequestHandler
 from apps.models import User, Loud
 from utils.decorator import authenticated
+from utils.constants import Fail, Success
 
 class LoudHandler(BaseRequestHandler):
 
@@ -20,7 +21,7 @@ class LoudHandler(BaseRequestHandler):
     @authenticated
     def post(self, lid):
         data = self.get_data()
-        msg = {'status': 'fail'}
+        msg = Fail
         if data:
             loud = Loud()
             loud.user = self.current_user
@@ -32,17 +33,17 @@ class LoudHandler(BaseRequestHandler):
             loud.from_dict(data)
 
             if loud.save():
-                msg = {'status': 'success'}
+                msg = Success
 
         self.render_json(msg)
 
     @authenticated
     def delete(self, lid):
         loud = Loud.query.get_by_key(lid)
-        msg = {'status': 'fail'}
+        msg = Fail
         if loud and loud.owenr_by(self.current_user):
             self.db.delete(loud)
-            msg = {'status': 'success'}
+            msg = Success
 
         self.render_json(msg)
 

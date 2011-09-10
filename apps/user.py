@@ -26,12 +26,7 @@ class UserHandler(BaseRequestHandler):
         data = self.get_data()
         user.from_dict(data)
 
-        if user.save():
-            msg = {'status': 'success'}
-        else:
-            msg = {'status': 'fail'}
-
-        self.render_json(msg)
+        self.render_json(user.save() and Success or Fail)
 
     @authenticated
     def put(self, phn):
@@ -42,21 +37,15 @@ class UserHandler(BaseRequestHandler):
         data = self.get_data()
         user.from_dict(data)
 
-        if user.save():
-            msg = {'status': 'success'}
-        else:
-            msg = {'status': 'fail'}
-
-        self.render_json(data)
+        self.render_json(user.save() and Success or Fail)
 
     @authenticated
     def delete(self, phn):
         user = self.current_user
         
         self.db.delete(user) # PS: delete all relation data
-        msg = {'status': 'success'}
         # delete user data 
-        self.render_json(msg)
+        self.render_json(Success)
 
 
 class AuthHandler(BaseRequestHandler):
