@@ -3,8 +3,10 @@
 import httplib, datetime
 
 import tornado.web
-from utils.escape import json_encode, json_decode
 
+from tornado.options import options
+
+from utils.escape import json_encode, json_decode
 from apps.models import User
 
 class BaseRequestHandler(tornado.web.RequestHandler):
@@ -16,7 +18,7 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 
     # json pickle data methods
     def json(self, data):
-        dthandler = lambda obj: str(obj) if isinstance(obj, (datetime.datetime, datetime.date)) else obj
+        dthandler = lambda obj: obj.isoformat() if isinstance(obj, (datetime.datetime, datetime.date)) else obj
         return json_encode(data, default=dthandler)
 
     # decode json picle data 
@@ -57,6 +59,9 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 
     def get_current_user(self):
         tk = self.get_argument('tk')
-        app = self.get_argument('app')
-        # validate the app key
-        return User.query.get_by_token(tk)
+        app_key = self.get_argument('ak')
+
+        if app_key == options.app_key:
+            return User.query.get_by_token(tk)
+
+        return None

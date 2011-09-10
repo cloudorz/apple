@@ -22,28 +22,39 @@ class UserHandler(BaseRequestHandler):
         self.render_json(info)
 
     def post(self, phn):
-        # TODO #3 create user 
+        user = User()
         data = self.get_data()
-        self.render_json("doing")
+        user.from_dict(data)
+
+        if user.save():
+            msg = {'status': 'success'}
+        else:
+            msg = {'status': 'fail'}
+
+        self.render_json(msg)
 
     @authenticated
     def put(self, phn):
-        user = User.query.get_by_phone(phn)
-        if user and user.owner_by(self.current_user):
-            pass
-        data = self.get_data()
+        ''' The User object can't modify phone
+        '''
+        user = self.current_user
 
-        # TODO #3 create the update key=value strings
+        data = self.get_data()
+        user.from_dict(data)
+
+        if user.save():
+            msg = {'status': 'success'}
+        else:
+            msg = {'status': 'fail'}
+
         self.render_json(data)
 
     @authenticated
     def delete(self, phn):
-        user = User.query.get_by_phone(phn)
-        # PS: delete all relation data
-        msg = {'status': 'fail'}
-        if user and user.owner_by(self.current_user):
-            self.db.delete(user)
-            msg = {'status': 'success'}
+        user = self.current_user
+        
+        self.db.delete(user) # PS: delete all relation data
+        msg = {'status': 'success'}
         # delete user data 
         self.render_json(msg)
 

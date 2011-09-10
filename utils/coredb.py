@@ -58,5 +58,12 @@ def obj_from_dict(self, data):
     dict_obj = vars(self).copy() # PS: not contain the user 
     [setattr(self, e, data[e]) for e in data.keys() if e in dict_obj]
 
+def obj_save(self):
+    if self.can_save():
+        self.db.commit()
+        return True
+        
+
 Base.to_dict = obj_to_dict
 Base.from_dict = obj_from_dict
+Base.save = obj_save

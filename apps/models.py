@@ -63,8 +63,7 @@ class User(Base):
         return "<user:%s>" % self.phone
 
     def can_save(self):
-        # TODO check all is ok
-        pass
+        return self.phone and self.password and self.name 
 
     def owner_by(self, u):
         return u and u.id == self.id
@@ -80,7 +79,7 @@ class User(Base):
 
     def user_to_dict_by_other(self):
         # non self get the (phone, name, avatar, last_longitude, last_atitude, updated)
-        info = self.to_dict(exclude=['id', 'password', 'token', 'radius', 'is_admin', 'block', 'created'])
+        info = self.to_dict(exclude=['id', 'password', 'token', 'radius', 'is_admin', 'block', 'created', 'louds'])
 
         return info
 

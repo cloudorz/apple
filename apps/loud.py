@@ -22,17 +22,16 @@ class LoudHandler(BaseRequestHandler):
         data = self.get_data()
         msg = {'status': 'fail'}
         if data:
-            u = User()
-            u.user = self.current_user
+            loud = Loud()
+            loud.user = self.current_user
 
             if self.current_user.is_admin:
                 # admin's loud
                 data['grade'] = 0
 
-            u.from_dict(data)
+            loud.from_dict(data)
 
-            if u.can_save():
-                self.db.commit()
+            if loud.save():
                 msg = {'status': 'success'}
 
         self.render_json(msg)
