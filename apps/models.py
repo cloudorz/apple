@@ -66,8 +66,32 @@ class User(Base):
         # TODO check all is ok
         pass
 
-    def ower_by(self, u):
+    def owner_by(self, u):
         return u and u.id == self.id
+
+    def user_to_dict(self, u):
+        if self.owner_by(u):
+            # owner 's 
+            info = self.user_to_dict_by_owner()
+        else:
+            info = self.user_to_dict_by_other()
+
+        return info
+
+    def user_to_dict_by_other(self):
+        # non self get the (phone, name, avatar, last_longitude, last_atitude, updated)
+        info = self.to_dict(exclude=['id', 'password', 'token', 'radius', 'is_admin', 'block', 'created'])
+
+        return info
+
+    def user_to_dict_by_owner(self):
+        # user get the (content longitude latitude grade created phone name avatar last_longitude last_atitude
+        # loud_num is_admin distance updated created)
+        info = self.to_dict(exclude=['id', 'password', 'token', 'block'])
+        info['loud_num'] = self.loud_num
+        info['louds'] = [e.to_dict(exclude=['id', 'user_id', 'block']) for e in self.louds]
+
+        return info
 
 
 class Loud(Base):
@@ -96,12 +120,16 @@ class Loud(Base):
         return "<loud:%s>" % self.id
 
     def can_save(self):
-        # TODO check all is ok
-        pass
+        return self.user and self.content and self.lat and self.lon
 
-    def ower_by(self, u):
+    def owner_by(self, u):
         return u and u.id == self.user_id
+    
+    def loud_to_dict(self):
+        loud_dict = self.to_dict(exclude=['id', 'user_id', 'block'])
+        loud_dict['user'] = self.user.to_dict(exclude=['id', 'password', 'token', 'radius','updated', 'is_admin', 'block', 'created', 'last_lon', 'last_lat'])
 
+        return loud_dict
 
 # user's all louds number
 User.loud_num = column_property(sql.select([sql.func.count(Loud.id)]).\

@@ -57,4 +57,6 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 
     def get_current_user(self):
         tk = self.get_argument('tk')
-        self.user = User.get_by_token(tk)
+        app = self.get_argument('app')
+        # validate the app key
+        return User.query.get_by_token(tk)
