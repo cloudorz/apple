@@ -55,8 +55,9 @@ def obj_to_dict(self, exclude=[]):
     return dict_obj
 
 def obj_from_dict(self, data):
-    dict_obj = vars(self).copy() # PS: not contain the user 
-    [setattr(self, e, data[e]) for e in data.keys() if e in dict_obj]
+    # PS: not contain the user and not method name
+    attrs = [e for e in dir(self) if not e.startswith('_') and not callable(getattr(self, e))]
+    [setattr(self, e, data[e]) for e in data.keys() if e in attrs]
 
 def obj_save(self):
     if self.can_save():

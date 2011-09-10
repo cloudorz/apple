@@ -1,11 +1,11 @@
 # coding: utf-8
 
-import datetime
+import datetime, hashlib
 
 from tornado.escape import json_encode, json_decode
 
 from sqlalchemy import sql, Column, String, Integer, Boolean, DateTime, Float, ForeignKey
-from sqlalchemy.orm import relation, backref, column_property
+from sqlalchemy.orm import relation, backref, column_property, synonym
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from utils.coredb import BaseQuery, Base
@@ -45,7 +45,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     phone = Column(Integer, unique=True)
-    password = Column(String(32))
+    _password = Column("password", String(32))
     name = Column(String(20))
     avatar = Column(String(100), nullable=True)
     token = Column(String(64), nullable=True)
@@ -66,6 +66,14 @@ class User(Base):
     def __str__(self):
         return "<user:%s>" % self.phone
 
+    def _get_password(self):
+        return self._password
+    
+    def _set_password(self, password):
+        self._password = hashlib.md5(password).hexdigest()
+    
+    password = synonym("_password", descriptor=property(_get_password, _set_password))
+
     def can_save(self):
         return self.phone and self.password and self.name 
 
@@ -83,14 +91,14 @@ class User(Base):
 
     def user_to_dict_by_other(self):
         # non self get the (phone, name, avatar, last_longitude, last_atitude, updated)
-        info = self.to_dict(exclude=['id', 'password', 'token', 'radius', 'is_admin', 'block', 'created', 'louds'])
+        info = self.to_dict(exclude=['id', '_password', 'password', 'token', 'radius', 'is_admin', 'block', 'created', 'louds'])
 
         return info
 
     def user_to_dict_by_owner(self):
         # user get the (content longitude latitude grade created phone name avatar last_longitude last_atitude
         # loud_num is_admin distance updated created)
-        info = self.to_dict(exclude=['id', 'password', 'token', 'block'])
+        info = self.to_dict(exclude=['id', '_password', 'password', 'token', 'block'])
         info['loud_num'] = self.loud_num
         info['louds'] = [e.to_dict(exclude=['id', 'user_id', 'block']) for e in self.louds]
 
@@ -130,7 +138,7 @@ class Loud(Base):
     
     def loud_to_dict(self):
         loud_dict = self.to_dict(exclude=['id', 'user_id', 'block'])
-        loud_dict['user'] = self.user.to_dict(exclude=['id', 'password', 'token', 'radius','updated', 'is_admin', 'block', 'created', 'last_lon', 'last_lat'])
+        loud_dict['user'] = self.user.to_dict(exclude=['id', '_password', 'password', 'token', 'radius','updated', 'is_admin', 'block', 'created', 'last_lon', 'last_lat'])
 
         return loud_dict
 
