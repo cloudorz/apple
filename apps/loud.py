@@ -52,6 +52,6 @@ class LoudSearchHandler(BaseRequestHandler):
     @authenticated
     def get(self):
         louds = Loud.query.get_by_cycle(self.current_user)
-        loud_dicts = [e.to_dict() for e in louds]
+        loud_dicts = [e.loud_to_dict() for e in louds]
 
         self.render_json(loud_dicts)

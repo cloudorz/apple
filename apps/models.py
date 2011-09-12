@@ -137,7 +137,7 @@ class Loud(Base):
         return u and u.id == self.user_id
     
     def loud_to_dict(self):
-        loud_dict = self.to_dict(exclude=['id', 'user_id', 'block'])
+        loud_dict = self.to_dict(exclude=['user_id', 'block'])
         loud_dict['user'] = self.user.to_dict(exclude=['id', '_password', 'password', 'token', 'radius','updated', 'is_admin', 'block', 'created', 'last_lon', 'last_lat'])
 
         return loud_dict
