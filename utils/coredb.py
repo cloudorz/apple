@@ -61,6 +61,7 @@ def obj_from_dict(self, data):
 
 def obj_save(self):
     if self.can_save():
+        print self.db
         self.db.commit()
         return True
         
