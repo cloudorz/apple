@@ -40,7 +40,6 @@ class _QueryProperty(object):
 
 # this way create class vars is ok, the subclass also can inherit it
 Base = declarative_base()
-Base.db = sql_db.db_session
 Base.query_class = BaseQuery
 Base.query = _QueryProperty()
 
@@ -61,9 +60,7 @@ def obj_from_dict(self, data):
 
 def obj_save(self):
     if self.can_save():
-        print Base.db
-        print sql_db.db_session
-        self.db.commit()
+        sql_db.db_session.commit()
         return True
         
 
