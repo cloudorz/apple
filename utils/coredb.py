@@ -62,6 +62,7 @@ def obj_from_dict(self, data):
 def obj_save(self):
     if self.can_save():
         print Base.db
+        print sql_db.db_session
         self.db.commit()
         return True
         
