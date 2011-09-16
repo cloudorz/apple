@@ -115,6 +115,7 @@ class Loud(Base):
     content = Column(String(70))
     lon = Column(Float, default=0)
     lat = Column(Float, default=0)
+    address = Column(String(30), nullable=True)
     grade = Column(Integer, default=5)
     block = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.datetime.now)
