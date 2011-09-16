@@ -34,8 +34,13 @@ class UserQuery(BaseQuery):
         return user
 
 class LoudQuery(BaseQuery):
-    def get_by_cycle(self, u):
-        # TODO #1 compute the loud cycle alr..
+    def get_by_cycle(self, user_lat, user_lon):
+        return self.from_statement("SELECT * FROM louds WHERE \
+                ABS(:earth_r*ACOS(SIN(:lat)*SIN(lat)*COS(:lon-lon)+COS(:lat)*COS(lat))*PI()/180) < \
+                :distance limit :num").params(earth_r=6378137, lat=user_lat, lon=user_lon, \
+                        distance=5000, num=100)
+
+    def get_by_list(self):
         return self.filter_by(block=False).order_by('created desc').limit(1000)
 
 class User(Base):
