@@ -2,13 +2,12 @@
 
 import datetime, hashlib
 
-from tornado.escape import json_encode, json_decode
-
 from sqlalchemy import sql, Column, String, Integer, Boolean, DateTime, Float, ForeignKey
 from sqlalchemy.orm import relation, backref, column_property, synonym
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from utils.coredb import BaseQuery, Base
+from utils.escape import json_encode, json_decode
 
 # TODO #2 redis cache the user's loud-id set  and when signup cache the pre-user's phone number
 
@@ -57,6 +56,7 @@ class User(Base):
     last_lon = Column(Float, default=0)
     last_lat = Column(Float, default=0)
     radius = Column(Float, nullable=True, default=2.5)
+    _shadow = Column("shadow", String(2048), nullable=True)
     is_admin = Column(Boolean, default=False)
     block = Column(Boolean, default=False)
     updated = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
@@ -79,6 +79,17 @@ class User(Base):
     
     password = synonym("_password", descriptor=property(_get_password, _set_password))
 
+    def _get_shadow(self):
+        if self._shadow:
+            return json_decode(self._shadow)
+
+        return []
+
+    def _set_shadow(self, data):
+        self._shadow = json_encode(data)
+
+    shadow = synonym("_shadow", descriptor=property(_get_shadow, _set_shadow))
+
     def can_save(self):
         return self.phone and self.password and self.name 
 
@@ -96,7 +107,7 @@ class User(Base):
 
     def user_to_dict_by_other(self):
         # non self get the (phone, name, avatar, last_longitude, last_atitude, updated)
-        info = self.to_dict(exclude=['id', '_password', 'password', 'token', 'radius', 'is_admin', 'block', 'created', 'louds'])
+        info = self.to_dict(exclude=['id', '_shadow', 'shadow', '_password', 'password', 'token', 'radius', 'is_admin', 'block', 'created', 'louds'])
 
         return info
 

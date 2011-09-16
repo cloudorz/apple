@@ -15,6 +15,7 @@ CREATE TABLE users (
     last_lat DOUBLE NOT NULL DEFAULT 0,
     /*loud_num INT NOT NULL DEFAULT 0,*/
     radius FLOAT NULL,
+    shadow VARCHAR(2048) NULL,
     is_admin TINYINT(1) NOT NULL DEFAULT 0,
     block TINYINT(1) NOT NULL DEFAULT 0,
     updated DATETIME NOT NULL,
