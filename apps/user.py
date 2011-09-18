@@ -64,6 +64,7 @@ class AuthHandler(BaseRequestHandler):
                     user.token = uuid.uuid5(uuid.NAMESPACE_URL, "%s%s" % (user.phone,
                         datetime.datetime.now())).hex
                     user.save()
+                    print user.to_dict()
                     info = user.user_to_dict_by_auth()
                 else:
                     info = Fail
