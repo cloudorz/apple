@@ -1,12 +1,13 @@
 # coding: utf-8
 
+import uuid, datetime
+
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.state import InstanceState
 
 from apps import BaseRequestHandler
 from apps.models import User, Loud
 from utils.decorator import authenticated
-
 
 class UserHandler(BaseRequestHandler):
 
@@ -49,4 +50,22 @@ class UserHandler(BaseRequestHandler):
 
 
 class AuthHandler(BaseRequestHandler):
-    pass
+
+    def post(self):
+        if not self.is_available_client():
+            self.render_error(401)
+            return
+        else:
+            info = self.get_data()
+            if 'phone' in info and 'password' in info:
+                user = User.query.get_by_phone(info['phone'])
+                if user and user.authenticate(info['password']):
+                    user.token = uuid.uuid5(uuid.NAMESPACE_URL, "%s%s" % (user.phone,
+                        datetime.datetime.now()))
+                    user.save()
+                    info = user.user_to_dict_by_auth()
+                else:
+                    info = Fail
+            else:
+                info = Fail
+        self.render_json(info) 

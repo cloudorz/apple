@@ -52,9 +52,9 @@ class User(Base):
     _password = Column("password", String(32))
     name = Column(String(20))
     avatar = Column(String(100), nullable=True)
-    token = Column(String(64), nullable=True)
-    last_lon = Column(Float, default=0)
+    token = Column(String(32), nullable=True)
     last_lat = Column(Float, default=0)
+    last_lon = Column(Float, default=0)
     radius = Column(Float, nullable=True, default=2.5)
     _shadow = Column("shadow", String(2048), nullable=True)
     is_admin = Column(Boolean, default=False)
@@ -96,6 +96,9 @@ class User(Base):
     def owner_by(self, u):
         return u and u.id == self.id
 
+    def authenticate(self, password):
+        return self.password == hashlib.md5(password).hexdigest()
+
     def user_to_dict(self, u):
         if self.owner_by(u):
             # owner 's 
@@ -120,6 +123,11 @@ class User(Base):
 
         return info
 
+    def user_to_dict_by_auth(self):
+        info = self.to_dict(exclude=['id', '_shadow', 'shadow', '_password', 'password', 'radius',
+            'is_admin', 'block', 'created', 'louds', 'avatar', 'last_lon', 'last_lat'])
+
+        return info
 
 class Loud(Base):
     __tablename__ = 'louds'

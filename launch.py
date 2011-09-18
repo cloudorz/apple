@@ -16,7 +16,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from apps.loud import LoudHandler, LoudSearchHandler
-from apps.user import UserHandler
+from apps.user import UserHandler, AuthHandler
 from utils.coredb import sql_db
 
 # server
@@ -38,7 +38,7 @@ class Application(tornado.web.Application):
                 (r'^/l/(\d+|)$', LoudHandler),
                 (r'^/l/list$', LoudSearchHandler),
                 (r'^/u/(\d{11}|)$', UserHandler),
-                #(r"/login", AuthLoginHandler),
+                (r"/auth", AuthHandler),
                 #(r"/logout", AuthLogoutHandler),
                 # normal ye mian
                 #(r"/", pages.HomeHandler),

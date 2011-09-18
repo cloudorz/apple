@@ -59,9 +59,12 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 
     def get_current_user(self):
         tk = self.get_argument('tk')
-        app_key = self.get_argument('ak')
 
-        if app_key == options.app_key:
+        if self.is_available_client():
             return User.query.get_by_token(tk)
 
         return None
+
+    def is_available_client(self):
+        app_key = self.get_argument('ak')
+        return app_key == options.app_key

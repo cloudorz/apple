@@ -10,7 +10,7 @@ CREATE TABLE users (
     password VARCHAR(32) NOT NULL,
     name VARCHAR(20) NOT NULL,
     avatar VARCHAR(100) NULL,
-    token VARCHAR(64) NULL,
+    token VARCHAR(32) NULL,
     last_lon DOUBLE NOT NULL DEFAULT 0,
     last_lat DOUBLE NOT NULL DEFAULT 0,
     /*loud_num INT NOT NULL DEFAULT 0,*/
