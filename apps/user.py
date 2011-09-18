@@ -8,6 +8,7 @@ from sqlalchemy.orm.state import InstanceState
 from apps import BaseRequestHandler
 from apps.models import User, Loud
 from utils.decorator import authenticated
+from utils.constants import Fail, Success
 
 class UserHandler(BaseRequestHandler):
 
