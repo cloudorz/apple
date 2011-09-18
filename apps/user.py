@@ -62,7 +62,7 @@ class AuthHandler(BaseRequestHandler):
                 user = User.query.get_by_phone(new_info['phone'])
                 if user and user.authenticate(new_info['password']):
                     user.token = uuid.uuid5(uuid.NAMESPACE_URL, "%s%s" % (user.phone,
-                        datetime.datetime.now()))
+                        datetime.datetime.now())).hex
                     user.save()
                     info = user.user_to_dict_by_auth()
                 else:
