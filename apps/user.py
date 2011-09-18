@@ -57,10 +57,10 @@ class AuthHandler(BaseRequestHandler):
             self.render_error(401)
             return
         else:
-            info = self.get_data()
-            if 'phone' in info and 'password' in info:
-                user = User.query.get_by_phone(info['phone'])
-                if user and user.authenticate(info['password']):
+            new_info = self.get_data()
+            if 'phone' in new_info and 'password' in new_info:
+                user = User.query.get_by_phone(new_info['phone'])
+                if user and user.authenticate(new_info['password']):
                     user.token = uuid.uuid5(uuid.NAMESPACE_URL, "%s%s" % (user.phone,
                         datetime.datetime.now()))
                     user.save()
@@ -69,4 +69,5 @@ class AuthHandler(BaseRequestHandler):
                     info = Fail
             else:
                 info = Fail
+        print info
         self.render_json(info) 
