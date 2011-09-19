@@ -16,21 +16,13 @@ class UserQuery(BaseQuery):
         ''' Get user from users table return the User object 
         or Not exisit and Multi exisit return None
         '''
-        try:
-            user = self.filter_by(phone=phn, block=False).one()
-        except (NoResultFound, MultipleResultsFound):
-            user = None
-        return user
+         return self.filter_by(phone=phn, block=False).first()
     
     def get_by_token(self, token):
         ''' Get user from users table return the User object 
         or Not exisit and Multi exisit return None
         '''
-        try:
-            user = self.filter_by(token=token, block=False).one()
-        except (NoResultFound, MultipleResultsFound):
-            user = None
-        return user
+        return self.filter_by(token=token, block=False).first()
 
 class LoudQuery(BaseQuery):
     def get_by_cycle(self, user_lat, user_lon):
