@@ -69,5 +69,5 @@ class AuthHandler(BaseRequestHandler):
                     info = Fail
             else:
                 info = Fail
-        print info
+
         self.render_json(info) 
