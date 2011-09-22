@@ -16,7 +16,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from apps.loud import LoudHandler, LoudSearchHandler
-from apps.user import UserHandler, AuthHandler, PasswordHandler
+from apps.user import UserHandler, AuthHandler, PasswordHandler, DelUserHandler
 from utils.coredb import sql_db
 
 # server
@@ -40,6 +40,7 @@ class Application(tornado.web.Application):
                 (r'^/u/(\d{11}|)$', UserHandler),
                 (r"^/auth$", AuthHandler),
                 (r"^/pass$", PasswordHandler),
+                (r"^/u/(\d{11}|)/del$", DelUserHandler),
                 #(r"/logout", AuthLogoutHandler),
                 # normal ye mian
                 #(r"/", pages.HomeHandler),
@@ -66,7 +67,7 @@ def main():
     sql_db.init_app(app)
 
     # server 
-    http_server = tornado.httpserver.HTTPServer(app)
+    http_server = tornado.httpserver.HTTPServer(app, xheaders=True)
     http_server.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
 
