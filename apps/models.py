@@ -27,7 +27,7 @@ class UserQuery(BaseQuery):
 class LoudQuery(BaseQuery):
     def get_by_cycle(self, user_lat, user_lon):
         return self.from_statement("SELECT * FROM louds WHERE \
-                id>0 AND ABS(:earth_r*ACOS(SIN(:lat)*SIN(lat)*COS(:lon-lon)+COS(:lat)*COS(lat))*PI()/180) < \
+                user_id>0 AND ABS(:earth_r*ACOS(SIN(:lat)*SIN(lat)*COS(:lon-lon)+COS(:lat)*COS(lat))*PI()/180) < \
                 :distance limit :num").params(earth_r=6378137, lat=user_lat, lon=user_lon, \
                         distance=5000, num=100)
 
