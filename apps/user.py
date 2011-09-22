@@ -44,10 +44,15 @@ class UserHandler(BaseRequestHandler):
     @authenticated
     def delete(self, phn):
         user = self.current_user
+        data = self.get_data()
+
+        info = Fail
+        if 'password' in data and user.authenticate(data['password']):
+            self.db.delete(user) # PS: delete all relation data
+            info = Success
         
-        self.db.delete(user) # PS: delete all relation data
         # delete user data 
-        self.render_json(Success)
+        self.render_json(info)
 
 
 class AuthHandler(BaseRequestHandler):
