@@ -71,3 +71,19 @@ class AuthHandler(BaseRequestHandler):
                 info = Fail
 
         self.render_json(info) 
+
+class PasswordHandler(BaseRequestHandler):
+
+    @authenticated
+    def post(self):
+        data = self.get_data()
+
+        info = Fail
+        if 'new_password' in data and 'old_password' in data:
+            if self.current_user.authenticate(data['new_password']):
+                self.current_user.password = data['old_password'];
+                self.current_user.save()
+
+                info = Success
+
+        self.render_json(info)
