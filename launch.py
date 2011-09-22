@@ -13,7 +13,7 @@ import tornado.ioloop
 from tornado.options import define, options
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 from apps.loud import LoudHandler, LoudSearchHandler
 from apps.user import UserHandler, AuthHandler, PasswordHandler, DelUserHandler
@@ -55,7 +55,7 @@ class Application(tornado.web.Application):
         super(Application, self).__init__(handlers, **settings)
 
         # sqlalchemy session 'db'
-        self.db_session = (sessionmaker(bind=create_engine(options.db_uri)))()
+        self.db_session = scoped_session((sessionmaker(bind=create_engine(options.db_uri)))())
 
 
 def main():
