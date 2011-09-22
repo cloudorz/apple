@@ -80,8 +80,8 @@ class PasswordHandler(BaseRequestHandler):
 
         info = Fail
         if 'new_password' in data and 'old_password' in data:
-            if self.current_user.authenticate(data['new_password']):
-                self.current_user.password = data['old_password'];
+            if self.current_user.authenticate(data['old_password']):
+                self.current_user.password = data['new_password'];
                 self.current_user.save()
 
                 info = Success
