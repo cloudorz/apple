@@ -49,6 +49,7 @@ class UserHandler(BaseRequestHandler):
         info = Fail
         if 'password' in data and user.authenticate(data['password']):
             self.db.delete(user) # PS: delete all relation data
+            self.db.commit()
             info = Success
         
         # delete user data 
@@ -103,6 +104,7 @@ class DelUserHandler(BaseRequestHandler):
         info = Fail
         if 'password' in data and user.authenticate(data['password']):
             self.db.delete(user) # PS: delete all relation data
+            self.db.commit()
             info = Success
         
         # delete user data 

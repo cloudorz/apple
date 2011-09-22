@@ -49,6 +49,7 @@ class LoudHandler(BaseRequestHandler):
         msg = Fail
         if loud and loud.owenr_by(self.current_user):
             self.db.delete(loud)
+            self.db.commit()
             msg = Success
 
         self.render_json(msg)
