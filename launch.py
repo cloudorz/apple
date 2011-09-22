@@ -55,7 +55,7 @@ class Application(tornado.web.Application):
         super(Application, self).__init__(handlers, **settings)
 
         # sqlalchemy session 'db'
-        self.db_session = scoped_session((sessionmaker(bind=create_engine(options.db_uri)))())
+        self.db_session = (scoped_session(sessionmaker(autoflush=True, bind=create_engine(options.db_uri))))()
 
 
 def main():
