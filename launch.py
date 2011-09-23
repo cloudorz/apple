@@ -25,6 +25,9 @@ define('port', default=8888, help="run on the given port", type=int)
 # database
 define('db_uri', default="mysql://root:123@localhost/apple?charset=utf8", type=str, help="connect to mysql")
 
+# avatar dir  path
+define('path', default="/data/web/static/i/", type=str, help="recommend default one")
+
 # app key
 define("app_name", default="apple", help="app name")
 define("app_key", default="12345678", help="app key")

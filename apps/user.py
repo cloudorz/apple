@@ -9,6 +9,7 @@ from apps import BaseRequestHandler
 from apps.models import User, Loud
 from utils.decorator import authenticated
 from utils.constants import Fail, Success
+from utils.imagepp import save_images
 
 class UserHandler(BaseRequestHandler):
 
@@ -116,7 +117,7 @@ class UploadHandler(BaseRequestHandler):
     def post(self):
         info = Fail
         if 'photo' in self.request.files:
-            print self.request.files
+            save_images(self.request.files['photo'])
             info = Success
 
         self.render_json(info)
