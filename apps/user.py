@@ -109,3 +109,14 @@ class DelUserHandler(BaseRequestHandler):
         
         # delete user data 
         self.render_json(info)
+
+class UploadHandler(BaseRequestHandler):
+
+    @authenticated
+    def post(self):
+        info = Fail
+        if 'photo' in self.request.files:
+            print self.request.files
+            info = Success
+
+        self.render_json(info)
