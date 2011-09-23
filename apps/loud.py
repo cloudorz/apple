@@ -80,7 +80,7 @@ class LoudManageHandler(BaseRequestHandler):
 
     @authenticated
     def get(self):
-        louds = Loud.query.filter(Loud.user==self.current_user, Loud.block==False, Loud.id>0).limit(3)
+        louds = Loud.query.filter(Loud.user==self.current_user).filter(Loud.block==False).filter(Loud.id>0).limit(3)
         res = [{'pk':e.id, 'content': e.content} for e in louds]
 
         self.render_json(res)
