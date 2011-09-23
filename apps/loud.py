@@ -48,8 +48,8 @@ class LoudHandler(BaseRequestHandler):
         loud = Loud.query.get_by_key(lid)
         msg = Fail
         if loud and loud.owenr_by(self.current_user):
-            self.db.delete(loud)
-            self.db.commit()
+            loud.block = True
+            loud.save()
             msg = Success
 
         self.render_json(msg)
@@ -75,3 +75,12 @@ class LoudSearchHandler(BaseRequestHandler):
         loud_dicts = [e.loud_to_dict() for e in louds if e.id in loud_add_set]
 
         self.render_json({'add': loud_dicts, 'del': list(loud_del_set)})
+
+class LoudManageHandler(BaseRequestHandler):
+
+    @authenticated
+    def get(self):
+        louds = Loud.query.filter(user==self.current_user, block==False, id>0).limit(3)
+        res = [{'pk':e.id, 'content': e.content} for e in louds]
+
+        self.render_json(res)

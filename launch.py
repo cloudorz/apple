@@ -15,7 +15,7 @@ from tornado.options import define, options
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from apps.loud import LoudHandler, LoudSearchHandler
+from apps.loud import LoudHandler, LoudSearchHandler, LoudManageHandler
 from apps.user import UserHandler, AuthHandler, PasswordHandler, DelUserHandler, UploadHandler
 from utils.coredb import sql_db
 
@@ -40,6 +40,7 @@ class Application(tornado.web.Application):
         handlers = [
                 (r'^/l/(\d+|)$', LoudHandler),
                 (r'^/l/list$', LoudSearchHandler),
+                (r'^/l/dels$', LoudManageHandler),
                 (r'^/u/(\d{11}|)$', UserHandler),
                 (r"^/auth$", AuthHandler),
                 (r"^/pass$", PasswordHandler),
