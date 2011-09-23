@@ -16,7 +16,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from apps.loud import LoudHandler, LoudSearchHandler
-from apps.user import UserHandler, AuthHandler, PasswordHandler, DelUserHandler
+from apps.user import UserHandler, AuthHandler, PasswordHandler, DelUserHandler, UploadHandler
 from utils.coredb import sql_db
 
 # server
@@ -40,6 +40,7 @@ class Application(tornado.web.Application):
                 (r'^/u/(\d{11}|)$', UserHandler),
                 (r"^/auth$", AuthHandler),
                 (r"^/pass$", PasswordHandler),
+                (r"^/upload$", UploadHandler),
                 (r"^/u/(\d{11}|)/del$", DelUserHandler),
                 #(r"/logout", AuthLogoutHandler),
                 # normal ye mian
