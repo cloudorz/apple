@@ -10,6 +10,8 @@ from apps.models import User, Loud
 from utils.decorator import authenticated
 from utils.constants import Fail, Success
 from utils.imagepp import save_images
+from utils.sp import sms_send
+from utils.mkthings import generate_password
 
 class UserHandler(BaseRequestHandler):
 
@@ -121,3 +123,23 @@ class UploadHandler(BaseRequestHandler):
             info = Success
 
         self.render_json(info)
+
+class RestPasswordHandler(BaseRequestHandler):
+
+    def get(self):
+        info = Fail
+        if not self.is_available_client():
+            self.render_error(401)
+            return
+        else:
+            user = User.query.get_by_phone(self.get_argument('p'))
+            if user:
+                new_password = generate_password()
+                user.password = new_password
+                user.save()
+                sms_send(new_password)
+
+                info = Success
+
+        return self.render_json(info)
+
