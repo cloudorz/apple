@@ -47,7 +47,7 @@ class LoudHandler(BaseRequestHandler):
     def delete(self, lid):
         loud = Loud.query.get_by_key(lid)
         msg = Fail
-        if loud and loud.owenr_by(self.current_user):
+        if loud and loud.owner_by(self.current_user):
             loud.block = True
             loud.save()
             msg = Success
