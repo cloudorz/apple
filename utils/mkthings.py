@@ -3,4 +3,4 @@
 import random
 
 def generate_password():
-    return ''.jion(random.sample("abcdefghijkmnpqrstuvwxyz23456789", 6))
+    return ''.join(random.sample("abcdefghijkmnpqrstuvwxyz23456789", 6))
