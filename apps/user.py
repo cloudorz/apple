@@ -26,15 +26,12 @@ class UserHandler(BaseRequestHandler):
 
         self.render_json(info)
 
+    @availabelclient
     def post(self, phn):
-        if not self.is_available_client():
-            self.render_error(401)
-            return
-        else:
-            user = User()
-            data = self.get_data()
-            data['avatar'] = 'i/%s.jpg' % data['phone'] 
-            user.from_dict(data)
+        user = User()
+        data = self.get_data()
+        data['avatar'] = 'i/%s.jpg' % data['phone'] 
+        user.from_dict(data)
 
         self.render_json(user.save() and Success or Fail)
 
@@ -66,23 +63,17 @@ class UserHandler(BaseRequestHandler):
 
 class AuthHandler(BaseRequestHandler):
 
+    @availabelclient
     def post(self):
-        if not self.is_available_client():
-            self.render_error(401)
-            return
-        else:
-            new_info = self.get_data()
-            if 'phone' in new_info and 'password' in new_info:
-                user = User.query.get_by_phone(new_info['phone'])
-                if user and user.authenticate(new_info['password']):
-                    user.token = uuid.uuid5(uuid.NAMESPACE_URL, "%s%s" % (user.phone,
-                        datetime.datetime.now())).hex
-                    info = user.user_to_dict_by_auth()
-                    user.save()
-                else:
-                    info = Fail
-            else:
-                info = Fail
+        new_info = self.get_data()
+        info = Fail
+        if 'phone' in new_info and 'password' in new_info:
+            user = User.query.get_by_phone(new_info['phone'])
+            if user and user.authenticate(new_info['password']):
+                user.token = uuid.uuid5(uuid.NAMESPACE_URL, "%s%s" % (user.phone,
+                    datetime.datetime.now())).hex
+                info = user.user_to_dict_by_auth() # must before save
+                user.save()
 
         self.render_json(info) 
 
@@ -120,34 +111,28 @@ class DelUserHandler(BaseRequestHandler):
 
 class UploadHandler(BaseRequestHandler):
 
+    @availabelclient
     def post(self):
         info = Fail
-        if not self.is_available_client():
-            self.render_error(401)
-            return
-        else:
-            if 'photo' in self.request.files:
-                save_images(self.request.files['photo'])
-                info = Success
+        if 'photo' in self.request.files:
+            save_images(self.request.files['photo'])
+            info = Success
 
         self.render_json(info)
 
 class RestPasswordHandler(BaseRequestHandler):
 
+    @availabelclient
     def get(self):
         info = Fail
-        if not self.is_available_client():
-            self.render_error(401)
-            return
-        else:
-            user = User.query.get_by_phone(self.get_argument('p'))
-            if user:
-                new_password = generate_password()
-                user.password = new_password
-                user.save()
-                sms_send(user.phone, new_password)
+        user = User.query.get_by_phone(self.get_argument('p'))
+        if user:
+            new_password = generate_password()
+            user.password = new_password
+            user.save()
+            sms_send(user.phone, new_password)
 
-                info = Success
+            info = Success
 
         return self.render_json(info)
 
