@@ -137,9 +137,25 @@ class RestPasswordHandler(BaseRequestHandler):
                 new_password = generate_password()
                 user.password = new_password
                 user.save()
-                sms_send(new_password)
+                sms_send(user.phone, new_password)
 
                 info = Success
 
         return self.render_json(info)
 
+class SendCodeHandler():
+
+    def get(self):
+        info = Fail
+        if not self.is_available_client():
+            self.render_error(401)
+            return
+        else:
+            phone = self.get_argument('p')
+            code = self.get_argument('code')
+            
+            if phone and code:
+                sms_send(phone, code)
+                info = Success
+
+        return self.render_json(info)
