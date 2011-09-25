@@ -7,7 +7,7 @@ from sqlalchemy.orm.state import InstanceState
 
 from apps import BaseRequestHandler
 from apps.models import User, Loud
-from utils.decorator import authenticated
+from utils.decorator import authenticated, availabelclient
 from utils.constants import Fail, Success
 from utils.imagepp import save_images
 from utils.sp import sms_send
@@ -34,8 +34,6 @@ class UserHandler(BaseRequestHandler):
             user = User()
             data = self.get_data()
             data['avatar'] = 'i/%s.jpg' % data['phone'] 
-            data['last_lat'] = 30.000000
-            data['last_lon'] = 120.000000
             user.from_dict(data)
 
         self.render_json(user.save() and Success or Fail)
@@ -155,18 +153,15 @@ class RestPasswordHandler(BaseRequestHandler):
 
 class SendCodeHandler(BaseRequestHandler):
 
+    @availabelclient
     def get(self):
+        phone = self.get_argument('p')
+        code = self.get_argument('code')
+        user = User.query.get_by_phone(phone)
+        
         info = Fail
-        if not self.is_available_client():
-            self.render_error(401)
-            return
-        else:
-            phone = self.get_argument('p')
-            code = self.get_argument('code')
-            user = User.query.get_by_phone(phone)
-            
-            if phone and code and not user:
-                sms_send(phone, code)
-                info = Success
+        if phone and code and not user:
+            sms_send(phone, code)
+            info = Success
 
         return self.render_json(info)

@@ -12,3 +12,11 @@ def authenticated(method):
             raise HTTPError(403)
         return method(self, *args, **kwargs)
     return wrapper
+
+def availabelclient(method):
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.is_available_client():
+            raise HTTPError(401)
+        return method(self, *args, **kwargs)
+    return wrapper
