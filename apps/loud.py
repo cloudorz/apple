@@ -26,14 +26,13 @@ class LoudHandler(BaseRequestHandler):
             loud = Loud()
             loud.user = self.current_user
 
-
             if self.current_user.is_admin:
                 # admin's loud
                 data['grade'] = 0
 
             loud.from_dict(data)
 
-            if loud.save() :
+            if loud.save():
                 msg = Success
 
             # addtional operation add the position

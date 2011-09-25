@@ -33,7 +33,11 @@ class UserHandler(BaseRequestHandler):
         data['avatar'] = 'i/%s.jpg' % data['phone'] 
         user.from_dict(data)
 
-        self.render_json(user.save() and Success or Fail)
+        info = Fail
+        if user.save():
+            info = Success
+
+        self.render_json(info)
 
     @authenticated
     def put(self, phn):
