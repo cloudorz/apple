@@ -143,7 +143,7 @@ class RestPasswordHandler(BaseRequestHandler):
 
         return self.render_json(info)
 
-class SendCodeHandler():
+class SendCodeHandler(BaseRequestHandler):
 
     def get(self):
         info = Fail
