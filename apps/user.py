@@ -163,8 +163,9 @@ class SendCodeHandler(BaseRequestHandler):
         else:
             phone = self.get_argument('p')
             code = self.get_argument('code')
+            user = User.query.get_by_phone(phone)
             
-            if phone and code:
+            if phone and code and not user:
                 sms_send(phone, code)
                 info = Success
 
