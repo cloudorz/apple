@@ -27,9 +27,16 @@ class UserHandler(BaseRequestHandler):
         self.render_json(info)
 
     def post(self, phn):
-        user = User()
-        data = self.get_data()
-        user.from_dict(data)
+        if not self.is_available_client():
+            self.render_error(401)
+            return
+        else:
+            user = User()
+            data = self.get_data()
+            data['avatar'] = 'i/%s.jpg' % data['phone'] 
+            data['last_lat'] = 30.000000
+            data['last_lon'] = 120.000000
+            user.from_dict(data)
 
         self.render_json(user.save() and Success or Fail)
 
@@ -115,12 +122,15 @@ class DelUserHandler(BaseRequestHandler):
 
 class UploadHandler(BaseRequestHandler):
 
-    @authenticated
     def post(self):
         info = Fail
-        if 'photo' in self.request.files:
-            save_images(self.request.files['photo'])
-            info = Success
+        if not self.is_available_client():
+            self.render_error(401)
+            return
+        else:
+            if 'photo' in self.request.files:
+                save_images(self.request.files['photo'])
+                info = Success
 
         self.render_json(info)
 
