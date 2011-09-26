@@ -23,7 +23,6 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 
     # decode json picle data 
     def dejson(self, data):
-        # FIXME other exception data
         return json_decode(data)
 
     def get_data(self):
@@ -33,6 +32,7 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         # the content type is not "application/json"
         if not self.is_pretty:
             data =  None
+        # FIXME return
 
         try:
             data = self.dejson(self.request.body);
@@ -40,7 +40,6 @@ class BaseRequestHandler(tornado.web.RequestHandler):
             # the data is not the right josn format
             data = None
 
-        # FIXME maybe data validation
         return data
 
     @property

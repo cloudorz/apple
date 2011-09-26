@@ -75,8 +75,18 @@ class AuthHandler(BaseRequestHandler):
 
 class PasswordHandler(BaseRequestHandler):
 
-    @availabelclient
+    @authenticated
     def get(self):
+        data = self.get_data()
+
+        info = Fail
+        if 'password' in data and self.current_user.authenticate(data['password']):
+            info = Success
+
+        self.render_json(info)
+
+    @availabelclient
+    def post(self):
         info = Fail
         user = User.query.get_by_phone(self.get_argument('p'))
         if user:
@@ -102,16 +112,6 @@ class PasswordHandler(BaseRequestHandler):
 
         self.render_json(info)
 
-    @authenticated
-    def post(self):
-        data = self.get_data()
-
-        info = Fail
-        if 'password' in data and self.current_user.authenticate(data['password']):
-            info = Success
-
-        self.render_json(info)
-
 
 class UploadHandler(BaseRequestHandler):
 
@@ -128,7 +128,7 @@ class UploadHandler(BaseRequestHandler):
 class SendCodeHandler(BaseRequestHandler):
 
     @availabelclient
-    def get(self):
+    def post(self):
         phone = self.get_argument('p')
         code = self.get_argument('code')
         user = User.query.get_by_phone(phone)

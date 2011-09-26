@@ -46,12 +46,6 @@ class Application(tornado.web.Application):
                 (r"^/pass$", PasswordHandler),
                 (r"^/code$", SendCodeHandler),
                 (r"^/upload$", UploadHandler),
-                #(r"^/reset$", RestPasswordHandler),
-                #(r"^/u/(\d{11}|)/del$", DelUserHandler),
-                #(r"/logout", AuthLogoutHandler),
-                # normal ye mian
-                #(r"/", pages.HomeHandler),
-                # registraction
                 ]
         settings = dict(
                 static_path=os.path.join(os.path.dirname(__file__), 'static'),
