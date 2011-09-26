@@ -46,4 +46,4 @@ def ret_code2desc(ret_code):
     if ret_code < 0:
         return errors[ret_code]
     else:
-        return u"成功发送%d条" %d ret_code
+        return u"成功发送%d条" % ret_code
