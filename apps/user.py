@@ -74,6 +74,20 @@ class AuthHandler(BaseRequestHandler):
 
 class PasswordHandler(BaseRequestHandler):
 
+    @availabelclient
+    def get(self):
+        info = Fail
+        user = User.query.get_by_phone(self.get_argument('p'))
+        if user:
+            new_password = generate_password()
+
+            if sms_send(user.phone, {'name': user.name, 'password': new_password}, 2) > 0:
+                user.password = new_password
+                user.save()
+                info = Success
+
+        self.render_json(info)
+
     @authenticated
     def put(self):
         data = self.get_data()
@@ -98,22 +112,6 @@ class PasswordHandler(BaseRequestHandler):
 
         self.render_json(info)
 
-class DelUserHandler(BaseRequestHandler):
-
-    @authenticated
-    def put(self, phn):
-        user = self.current_user
-        data = self.get_data()
-
-        info = Fail
-        if 'password' in data and user.authenticate(data['password']):
-            self.db.delete(user) # PS: delete all relation data
-            self.db.commit()
-            info = Success
-        
-        # delete user data 
-        self.render_json(info)
-
 class UploadHandler(BaseRequestHandler):
 
     @availabelclient
@@ -122,22 +120,6 @@ class UploadHandler(BaseRequestHandler):
         if 'photo' in self.request.files:
             save_images(self.request.files['photo'])
             info = Success
-
-        self.render_json(info)
-
-class RestPasswordHandler(BaseRequestHandler):
-
-    @availabelclient
-    def get(self):
-        info = Fail
-        user = User.query.get_by_phone(self.get_argument('p'))
-        if user:
-            new_password = generate_password()
-
-            if sms_send(user.phone, {'name': user.name, 'password': new_password}, 2) > 0:
-                user.password = new_password
-                user.save()
-                info = Success
 
         self.render_json(info)
 
