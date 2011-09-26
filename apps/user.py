@@ -27,17 +27,13 @@ class UserHandler(BaseRequestHandler):
         self.render_json(info)
 
     @availabelclient
-    def post(self, phn):
+    def post(self):
         user = User()
         data = self.get_data()
         data['avatar'] = 'i/%s.jpg' % data['phone'] 
         user.from_dict(data)
 
-        info = Fail
-        if user.save():
-            info = Success
-
-        self.render_json(info)
+        self.render_json(user.save() and Success or Fail)
 
     @authenticated
     def put(self, phn):
@@ -52,17 +48,12 @@ class UserHandler(BaseRequestHandler):
 
     @authenticated
     def delete(self, phn):
-        user = self.current_user
-        data = self.get_data()
-
-        info = Fail
-        if 'password' in data and user.authenticate(data['password']):
-            self.db.delete(user) # PS: delete all relation data
-            self.db.commit()
-            info = Success
+        # PS: delete all relation data user_id = 0
+        self.db.delete(self.current_user) 
+        self.db.commit()
         
         # delete user data 
-        self.render_json(info)
+        self.render_json(Success)
 
 
 class AuthHandler(BaseRequestHandler):
@@ -84,7 +75,7 @@ class AuthHandler(BaseRequestHandler):
 class PasswordHandler(BaseRequestHandler):
 
     @authenticated
-    def post(self):
+    def put(self):
         data = self.get_data()
 
         info = Fail
@@ -94,6 +85,16 @@ class PasswordHandler(BaseRequestHandler):
                 self.current_user.save()
 
                 info = Success
+
+        self.render_json(info)
+
+    @authenticated
+    def post(self):
+        data = self.get_data()
+
+        info = Fail
+        if 'password' in data and user.authenticate(data['password']):
+            info = Success
 
         self.render_json(info)
 

@@ -48,7 +48,7 @@ class Application(tornado.web.Application):
                 (r"^/pass$", PasswordHandler),
                 (r"^/code$", SendCodeHandler),
                 (r"^/upload$", UploadHandler),
-                (r"^/u/(\d{11}|)/del$", DelUserHandler),
+                #(r"^/u/(\d{11}|)/del$", DelUserHandler),
                 #(r"/logout", AuthLogoutHandler),
                 # normal ye mian
                 #(r"/", pages.HomeHandler),
