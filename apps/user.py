@@ -138,7 +138,7 @@ class RestPasswordHandler(BaseRequestHandler):
                 user.save()
                 info = Success
 
-        return self.render_json(info)
+        self.render_json(info)
 
 class SendCodeHandler(BaseRequestHandler):
 
@@ -152,4 +152,4 @@ class SendCodeHandler(BaseRequestHandler):
         if phone and code and not user and sms_send(phone, {'code': code}, 1) > 0:
             info = Success
 
-        return self.render_json(info)
+        self.render_json(info)
