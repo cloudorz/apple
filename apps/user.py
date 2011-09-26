@@ -93,7 +93,7 @@ class PasswordHandler(BaseRequestHandler):
         data = self.get_data()
 
         info = Fail
-        if 'password' in data and user.authenticate(data['password']):
+        if 'password' in data and self.current_user.authenticate(data['password']):
             info = Success
 
         self.render_json(info)
