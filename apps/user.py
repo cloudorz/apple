@@ -27,7 +27,7 @@ class UserHandler(BaseRequestHandler):
         self.render_json(info)
 
     @availabelclient
-    def post(self):
+    def post(self, phn):
         user = User()
         data = self.get_data()
         data['avatar'] = 'i/%s.jpg' % data['phone'] 
