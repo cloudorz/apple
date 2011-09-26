@@ -77,13 +77,9 @@ class PasswordHandler(BaseRequestHandler):
 
     @authenticated
     def get(self):
-        data = self.get_data()
+        pw = self.get_argument('pw')
 
-        info = Fail
-        if 'password' in data and self.current_user.authenticate(data['password']):
-            info = Success
-
-        self.render_json(info)
+        self.render_json(self.current_user.authenticated(pw) and Success or Fail)
 
     @availabelclient
     def post(self):
