@@ -46,10 +46,7 @@ def sms_send(phone, msg, msg_type):
     uri = u"http://utf8.sms.webchinese.cn/?Uid=cloud&Key=q12wer43ui8765tyop09&smsMob=%(phone)s&smsText=%(msg)s"
     uri = uri % {'phone': phone, 'msg': escape.url_escape(escape.utf8(msg_content))}
 
-    http_client = httpclient.()
-    http_client.fetch(uri, handler_sms_reqeust)
     http_client = httpclient.HTTPClient()
-
     try:
         response = http_client.fetch(uri)
     except httpclient.HTTPError, e:
