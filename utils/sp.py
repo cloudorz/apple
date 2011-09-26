@@ -33,7 +33,7 @@ def handler_sms_reqeust(response):
         print "Oops! error to request the sms service."
     else:
         ret_code = int(response.body)
-        print ret_code2desc(ret_code)
+        print escape.utf8(ret_code2desc(ret_code))
         ioloop.IOLoop.instance().stop()
 
 def sms_send(phone, msg, msg_type):
