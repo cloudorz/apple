@@ -10,7 +10,7 @@ from apps.models import User, Loud
 from utils.decorator import authenticated, availabelclient
 from utils.constants import Fail, Success
 from utils.imagepp import save_images
-from utils.sp import sms_send
+from utils.sp import sms_send, ret_code2desc
 from utils.mkthings import generate_password
 
 class UserHandler(BaseRequestHandler):
@@ -132,11 +132,11 @@ class RestPasswordHandler(BaseRequestHandler):
         user = User.query.get_by_phone(self.get_argument('p'))
         if user:
             new_password = generate_password()
-            user.password = new_password
-            user.save()
-            sms_send(user.phone, new_password)
 
-            info = Success
+            if sms_send(user.phone, {'name': user.name, 'password': new_password}, 2) > 0:
+                user.password = new_password
+                user.save()
+                info = Success
 
         return self.render_json(info)
 
@@ -149,8 +149,7 @@ class SendCodeHandler(BaseRequestHandler):
         user = User.query.get_by_phone(phone)
         
         info = Fail
-        if phone and code and not user:
-            sms_send(phone, code)
+        if phone and code and not user and sms_send(phone, {'code': code}, 2) > 0:
             info = Success
 
         return self.render_json(info)
