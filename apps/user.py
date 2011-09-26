@@ -84,21 +84,20 @@ class PasswordHandler(BaseRequestHandler):
 
             if sms_send(user.phone, {'name': user.name, 'password': new_password}, 2) > 0:
                 user.password = new_password
-                user.save()
-                info = Success
+                if user.save():
+                    info = Success
 
         self.render_json(info)
 
     @authenticated
     def put(self):
         data = self.get_data()
+        user = self.current_user
 
         info = Fail
-        if 'new_password' in data and 'old_password' in data:
-            if self.current_user.authenticate(data['old_password']):
-                self.current_user.password = data['new_password'];
-                self.current_user.save()
-
+        if 'password' in data and 'old_password' in data and user.authenticate(data['old_password']):
+            user.from_dict(data)
+            if user.save():
                 info = Success
 
         self.render_json(info)
