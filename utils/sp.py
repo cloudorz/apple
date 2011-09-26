@@ -34,7 +34,6 @@ def handler_sms_reqeust(response):
     else:
         ret_code = int(response.body)
         print escape.utf8(ret_code2desc(ret_code))
-        #ioloop.IOLoop.instance().stop()
 
 def sms_send(phone, msg, msg_type):
 
@@ -47,7 +46,16 @@ def sms_send(phone, msg, msg_type):
     uri = u"http://utf8.sms.webchinese.cn/?Uid=cloud&Key=q12wer43ui8765tyop09&smsMob=%(phone)s&smsText=%(msg)s"
     uri = uri % {'phone': phone, 'msg': escape.url_escape(escape.utf8(msg_content))}
 
-    http_client = httpclient.AsyncHTTPClient()
+    http_client = httpclient.()
     http_client.fetch(uri, handler_sms_reqeust)
+    http_client = httpclient.HTTPClient()
 
-    #ioloop.IOLoop.instance().start()
+    try:
+        response = http_client.fetch(uri)
+    except httpclient.HTTPError, e:
+        print "Error:", e
+    else:
+        ret_code = int(response.body)
+
+    return ret_code
+
