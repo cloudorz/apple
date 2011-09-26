@@ -133,10 +133,10 @@ class RestPasswordHandler(BaseRequestHandler):
         if user:
             new_password = generate_password()
 
-            if sms_send(user.phone, {'name': user.name, 'password': new_password}, 2) > 0:
-                user.password = new_password
-                user.save()
-                info = Success
+            sms_send(user.phone, {'name': user.name, 'password': new_password}, 2)
+            user.password = new_password
+            user.save()
+            info = Success
 
         return self.render_json(info)
 
@@ -149,7 +149,8 @@ class SendCodeHandler(BaseRequestHandler):
         user = User.query.get_by_phone(phone)
         
         info = Fail
-        if phone and code and not user and sms_send(phone, {'code': code}, 1) > 0:
+        if phone and code and not user and:
+            sms_send(phone, {'code': code}, 1)
             info = Success
 
         return self.render_json(info)
