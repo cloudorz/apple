@@ -33,8 +33,8 @@ def sms_send(phone, msg, msg_type):
     uri = u"http://utf8.sms.webchinese.cn/?Uid=cloud&Key=q12wer43ui8765tyop09&smsMob=%(phone)s&smsText=%(msg)s"
     uri = uri % {'phone': phone, 'msg': tornado.escape.url_escape(msg_content.encode('utf-8'))}
 
-    http_client = httpclient.AsyncHTTPClient()
-    http_client.fetch(uri, handle_request)
+    http_client = tornado.httpclient.AsyncHTTPClient()
+    http_client.fetch(uri, handler_sms_reqeust)
 
     tornado.ioloop.IOLoop.instance().start()
 
