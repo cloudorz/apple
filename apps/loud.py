@@ -53,6 +53,7 @@ class LoudHandler(BaseRequestHandler):
 
         self.render_json(msg)
 
+
 class LoudSearchHandler(BaseRequestHandler):
 
     @authenticated
@@ -74,6 +75,7 @@ class LoudSearchHandler(BaseRequestHandler):
         loud_dicts = [e.loud_to_dict() for e in louds if e.id in loud_add_set]
 
         self.render_json({'add': loud_dicts, 'del': list(loud_del_set)})
+
 
 class LoudManageHandler(BaseRequestHandler):
 

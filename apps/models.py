@@ -24,6 +24,7 @@ class UserQuery(BaseQuery):
         '''
         return self.filter_by(token=token, block=False).first()
 
+
 class LoudQuery(BaseQuery):
     def get_by_cycle(self, user_lat, user_lon):
         return self.from_statement("SELECT * FROM louds WHERE \
@@ -33,6 +34,7 @@ class LoudQuery(BaseQuery):
 
     def get_by_list(self):
         return self.filter_by(block=False).order_by('created desc').limit(1000)
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -120,6 +122,7 @@ class User(Base):
             'is_admin', 'block', 'created', 'louds', 'avatar', 'last_lon', 'last_lat'])
 
         return info
+
 
 class Loud(Base):
     __tablename__ = 'louds'

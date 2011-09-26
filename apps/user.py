@@ -72,6 +72,7 @@ class AuthHandler(BaseRequestHandler):
 
         self.render_json(info) 
 
+
 class PasswordHandler(BaseRequestHandler):
 
     @availabelclient
@@ -112,6 +113,7 @@ class PasswordHandler(BaseRequestHandler):
 
         self.render_json(info)
 
+
 class UploadHandler(BaseRequestHandler):
 
     @availabelclient
@@ -122,6 +124,7 @@ class UploadHandler(BaseRequestHandler):
             info = Success
 
         self.render_json(info)
+
 
 class SendCodeHandler(BaseRequestHandler):
 
