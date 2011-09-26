@@ -149,7 +149,7 @@ class SendCodeHandler(BaseRequestHandler):
         user = User.query.get_by_phone(phone)
         
         info = Fail
-        if phone and code and not user and sms_send(phone, {'code': code}, 2) > 0:
+        if phone and code and not user and sms_send(phone, {'code': code}, 1) > 0:
             info = Success
 
         return self.render_json(info)
