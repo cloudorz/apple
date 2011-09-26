@@ -34,7 +34,7 @@ def handler_sms_reqeust(response):
     else:
         ret_code = int(response.body)
         print escape.utf8(ret_code2desc(ret_code))
-        ioloop.IOLoop.instance().stop()
+        #ioloop.IOLoop.instance().stop()
 
 def sms_send(phone, msg, msg_type):
 
@@ -50,4 +50,4 @@ def sms_send(phone, msg, msg_type):
     http_client = httpclient.AsyncHTTPClient()
     http_client.fetch(uri, handler_sms_reqeust)
 
-    ioloop.IOLoop.instance().start()
+    #ioloop.IOLoop.instance().start()
