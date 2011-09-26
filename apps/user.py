@@ -79,7 +79,7 @@ class PasswordHandler(BaseRequestHandler):
     def get(self):
         pw = self.get_argument('pw')
 
-        self.render_json(self.current_user.authenticated(pw) and Success or Fail)
+        self.render_json(self.current_user.authenticate(pw) and Success or Fail)
 
     @availabelclient
     def post(self):
