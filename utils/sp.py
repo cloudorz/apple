@@ -1,6 +1,6 @@
 # coding: utf-8
 
-import urllib2
+import tornado
 
 __all__ = ['sms_send', 'ret_code2desc']
 
@@ -14,6 +14,14 @@ errors = {
         -42: u"短信内容为空",
         }
 
+def handler_sms_reqeust(response):
+    if response.error:
+        print "Oops! error to request the sms service."
+    else:
+        ret_code = int(response.body)
+        print ret_code2desc(ret_code)
+        tornado.ioloop.IOLoop.instance().stop()
+
 def sms_send(phone, msg, msg_type):
 
     assert isinstance(msg_type, int) and isinstance(msg, dict), "apply function with wrong arguments type"
@@ -25,14 +33,10 @@ def sms_send(phone, msg, msg_type):
     uri = u"http://utf8.sms.webchinese.cn/?Uid=cloud&Key=q12wer43ui8765tyop09&smsMob=%(phone)s&smsText=%(msg)s"
     uri = uri % {'phone': phone, 'msg': urllib2.quote(msg_content.encode('utf-8'))}
 
-    try:
-        res = urllib2.urlopen(uri)
-    except:
-        pass
-    else:
-        ret_code = int(res.read())
+    http_client = httpclient.AsyncHTTPClient()
+    http_client.fetch(uri, handle_request)
 
-    return ret_code
+    tornado.ioloop.IOLoop.instance().start()
 
 def get_sms_template(msg_type):
     res = u""
