@@ -142,14 +142,13 @@ class SendCodeHandler(BaseRequestHandler):
 
     @availabelclient
     def post(self):
-        phone = self.get_argument('p')
-        code = self.get_argument('code')
-        user = User.query.get_by_phone(phone)
+        data = self.get_data()
+        user = User.query.get_by_phone(data['phone'])
 
         if user: raise HTTPError(409)
         
         info = Fail
-        if phone and code and sms_send(phone, {'code': code}, 1) > 0:
+        if data['phone'] and data['code'] and sms_send(data['phone'], {'code': data['code']}, 1) > 0:
             info = Success
 
         self.render_json(info)
