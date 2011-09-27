@@ -89,6 +89,7 @@ class AuthHandler(BaseRequestHandler):
                 user.save()
 
                 self.render_json(info) 
+                return 
             else:
                 self.set_status(406)
                 msg = self.message("Password or phone is not correct.")
