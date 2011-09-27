@@ -11,6 +11,7 @@ import tornado.options
 import tornado.ioloop
 
 from tornado.options import define, options
+from tornado.web import url
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -38,14 +39,14 @@ define("app_secret", default="jkafldjaklfjda978-=-^**&", help="app secret")
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-                (r'^/l/(?P<lid>\d+|)$', LoudHandler),
-                (r'^/l/list$', LoudSearchHandler),
-                (r'^/l/dels$', LoudManageHandler),
-                (r'^/u/(?P<phn>\d{11}|)$', UserHandler),
-                (r"^/u/(?P<phn>\d{11}|)/passwd$", PasswordHandler),
-                (r"^/auth$", AuthHandler),
-                (r"^/code$", SendCodeHandler),
-                (r"^/upload$", UploadHandler),
+                url(r'^/l/(?P<lid>\d+|)$', LoudHandler, name='loud'),
+                url(r'^/l/list$', LoudSearchHandler),
+                url(r'^/l/dels$', LoudManageHandler),
+                url(r'^/u/(?P<phn>\d{11}|)$', UserHandler, name='loud'),
+                url(r"^/u/(?P<phn>\d{11}|)/passwd$", PasswordHandler),
+                url(r"^/auth$", AuthHandler),
+                url(r"^/code$", SendCodeHandler),
+                url(r"^/upload$", UploadHandler),
                 ]
         settings = dict(
                 static_path=os.path.join(os.path.dirname(__file__), 'static'),
