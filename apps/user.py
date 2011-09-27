@@ -23,10 +23,10 @@ class UserHandler(BaseRequestHandler):
 
         if user:
             info = user.user_to_dict(self.current_user)
+            self.render_json(info)
         else:
-            raise HTTPError(404)
-
-        self.render_json(info)
+            self.set_status(404)
+            self.render_json(self.message("The user is not exsited."))
 
     @availabelclient
     def post(self, phn):
@@ -35,12 +35,16 @@ class UserHandler(BaseRequestHandler):
         data = self.get_data()
         data['avatar'] = 'i/%s.jpg' % data['phone'] 
         user.from_dict(data)
-        user.save()
 
-        self.set_status(201)
-        self.set_header('Location', self.reverse_url('user', user.phone))
+        if user.save():
+            self.set_status(201)
+            self.set_header('Location', self.reverse_url('user', user.phone))
+            msg = self.message("Created Success.")
+        else:
+            self.set_status(400)
+            msg = self.message("name,phone,password field are required.")
         
-        self.render_json(self.message("Created Success."))
+        self.render_json(msg)
 
     @authenticated
     @admin('phn', 'user')
@@ -49,8 +53,9 @@ class UserHandler(BaseRequestHandler):
         '''
         data = self.get_data()
         user.from_dict(data)
+        user.save()
 
-        self.render_json(user.save() and Success or Fail)
+        self.render_json(self.message("Modfied Success."))
 
     @authenticated
     @admin('phn', 'user')
@@ -64,7 +69,7 @@ class UserHandler(BaseRequestHandler):
             user.block = True
             user.save()
         
-        self.render_json(Success)
+        self.render_json(self.message("Delete Success."))
 
     def get_recipient(self, phn):
         return User.query.get_by_phone(phn)
@@ -75,7 +80,6 @@ class AuthHandler(BaseRequestHandler):
     @availabelclient
     def post(self):
         new_info = self.get_data()
-        info = Fail
         if 'phone' in new_info and 'password' in new_info:
             user = User.query.get_by_phone(new_info['phone'])
             if user and user.authenticate(new_info['password']):
@@ -84,7 +88,15 @@ class AuthHandler(BaseRequestHandler):
                 info = user.user_to_dict_by_auth() # must before save
                 user.save()
 
-        self.render_json(info) 
+                self.render_json(info) 
+            else:
+                self.set_status(406)
+                msg = self.message("Password or phone is not correct.")
+        else:
+            self.set_status(400)
+            msg = self.message("phone, password field required.")
+
+        self.render_json(msg)
 
 
 class PasswordHandler(BaseRequestHandler):
@@ -94,38 +106,50 @@ class PasswordHandler(BaseRequestHandler):
     def get(self, user):
         pw = self.get_argument('pw')
 
-        info = Fail
         if user.authenticate(pw):
-            info = Success
+            msg = self.message("valid password for %s" % user.phone)
+        else:
+            self.set_status(406)
+            msg = self.message("Password or name is not correct.")
 
-        self.render_json(info)
+        self.render_json(msg)
 
     @availabelclient
     def post(self, phn):
-        info = Fail
+
         user = User.query.get_by_phone(phn)
         if user:
             new_password = generate_password()
 
             if sms_send(user.phone, {'name': user.name, 'password': new_password}, 2) > 0:
                 user.password = new_password
-                if user.save():
-                    info = Success
+                user.save()
+            msg = self.message("Message be sent.")
+        else:
+            self.set_status(404)
+            msg = self.message("The user is not exsited.")
 
-        self.render_json(info)
+        self.render_json(msg)
 
     @authenticated
     @admin('phn', 'user')
     def put(self, user):
+
         data = self.get_data()
 
-        info = Fail
-        if 'password' in data and 'old_password' in data and user.authenticate(data['old_password']):
-            user.from_dict(data)
-            if user.save():
-                info = Success
+        if 'password' in data and 'old_password' in data:
+            if  user.authenticate(data['old_password']):
+                user.from_dict(data)
+                user.save()
+                msg = "Modified Success."
+            else:
+                self.set_status(400)
+                msg = "password, old_password are reqeuired."
+        else:
+            self.set_status(406)
+            msg = "The old password is not correct."
 
-        self.render_json(info)
+        self.render_json(msg)
 
     def get_recipient(self, phn):
         return User.query.get_by_phone(phn)
@@ -135,12 +159,14 @@ class UploadHandler(BaseRequestHandler):
 
     @availabelclient
     def post(self):
-        info = Fail
         if 'photo' in self.request.files:
             save_images(self.request.files['photo'])
-            info = Success
+            msg = self.message("Upload Success.")
+        else:
+            self.set_status(400)
+            msg = self.message("photo field is requierd.")
 
-        self.render_json(info)
+        self.render_json(msg)
 
 
 class SendCodeHandler(BaseRequestHandler):
@@ -148,12 +174,17 @@ class SendCodeHandler(BaseRequestHandler):
     @availabelclient
     def post(self):
         data = self.get_data()
-        user = User.query.get_by_phone(data['phone'])
-
-        if user: raise HTTPError(409)
         
-        info = Fail
-        if data['phone'] and data['code'] and sms_send(data['phone'], {'code': data['code']}, 1) > 0:
-            info = Success
+        if 'phone' in data and 'code' in data:
+            user = User.query.get_by_phone(data['phone'])
+            if not user:
+                sms_send(data['phone'], {'code': data['code']}, 1)
+                msg = "Message be sent."
+            else:
+                self.set_status(409)
+                msg = "The user is already existed."
+        else:
+            self.set_status(400)
+            msg = "phone, code fields are required."
 
-        self.render_json(info)
+        self.render_json(msg)

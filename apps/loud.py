@@ -13,32 +13,36 @@ class LoudHandler(BaseRequestHandler):
 
         if loud:
             loud_dict = loud.loud_to_dict()
+            self.render_json(loud_dict)
         else:
-            loud_dict = None
-
-        self.render_json(loud_dict)
+            self.set_status(404)
+            self.render_json(self.message("the loud is not exsited"))
 
     @authenticated
     def post(self, lid):
         data = self.get_data()
-        msg = Fail
-        if data:
-            loud = Loud()
-            loud.user = self.current_user
 
-            if self.current_user.is_admin:
-                # admin's loud
-                data['grade'] = 0
+        loud = Loud()
+        loud.user = self.current_user
 
-            loud.from_dict(data)
+        if self.current_user.is_admin:
+            # admin's loud
+            data['grade'] = 0
 
-            if loud.save():
-                msg = Success
+        loud.from_dict(data)
 
-            # addtional operation add the position
-            self.current_user.last_lat = data['lat']
-            self.current_user.last_lon = data['lon']
-            self.current_user.save()
+        if loud.save():
+            self.set_status(201)
+            self.set_header('Location', self.reverse_url('loud', loud.phone))
+            msg = self.message("Created Success.")
+        else:
+            self.set_status(400)
+            msg = self.message("content,lat,lon fields are required.")
+
+        # addtional operation add the position
+        self.current_user.last_lat = data['lat']
+        self.current_user.last_lon = data['lon']
+        self.current_user.save()
 
         self.render_json(msg)
 
@@ -48,7 +52,7 @@ class LoudHandler(BaseRequestHandler):
         loud.block = True
         loud.save()
 
-        self.render_json(Success)
+        self.render_json(self.message("Remove Succss."))
 
     def get_recipient(self, lid):
         return Loud.query.get_by_key(lid)
