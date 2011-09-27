@@ -106,13 +106,10 @@ class PasswordHandler(BaseRequestHandler):
     @admin('phn', 'user')
     def get(self, user):
         pw = self.get_argument('pw')
-        print 'fuck here 3', pw
 
         if user.authenticate(pw):
-            print 'fuck here 1'
             msg = self.message("valid password for %s" % user.phone)
         else:
-            print 'fuck here 2'
             self.set_status(406)
             msg = self.message("Password or name is not correct.")
 
