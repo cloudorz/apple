@@ -42,7 +42,7 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 
     @property
     def is_pretty(self):
-        return self.request.headers.get('Content-Type', '').spit(';').pop(0).strip().lower() == 'application/json'
+        return self.request.headers.get('Content-Type', '').split(';').pop(0).strip().lower() == 'application/json'
 
     def get_error_html(self, status_code, **kwargs):
         ''' all error response where json data {'code': ..., 'msg': ...}
