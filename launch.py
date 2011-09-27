@@ -42,7 +42,7 @@ class Application(tornado.web.Application):
                 url(r'^/l/(?P<lid>\d+|)$', LoudHandler, name='loud'),
                 url(r'^/l/list$', LoudSearchHandler),
                 url(r'^/l/dels$', LoudManageHandler),
-                url(r'^/u/(?P<phn>\d{11}|)$', UserHandler, name='loud'),
+                url(r'^/u/(?P<phn>\d{11}|)$', UserHandler, name='user'),
                 url(r"^/u/(?P<phn>\d{11}|)/passwd$", PasswordHandler),
                 url(r"^/auth$", AuthHandler),
                 url(r"^/code$", SendCodeHandler),
