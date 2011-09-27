@@ -66,5 +66,5 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         app_key = self.get_argument('ak')
         return app_key == options.app_key
 
-    def message(msg):
+    def message(self, msg):
         return {'msg': msg}
