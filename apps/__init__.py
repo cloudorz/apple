@@ -35,7 +35,7 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 
         try:
             data = self.dejson(self.request.body);
-        except (ValueError,TypeError), e:
+        except (ValueError, TypeError), e:
             raise HTTPError(415) # the data is not the right josn format
 
         return data
@@ -66,3 +66,5 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         app_key = self.get_argument('ak')
         return app_key == options.app_key
 
+    def message(msg):
+        return {'msg': msg}

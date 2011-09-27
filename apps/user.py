@@ -31,11 +31,16 @@ class UserHandler(BaseRequestHandler):
     @availabelclient
     def post(self, phn):
         user = User()
+
         data = self.get_data()
         data['avatar'] = 'i/%s.jpg' % data['phone'] 
         user.from_dict(data)
+        user.save()
 
-        self.render_json(user.save() and Success or Fail)
+        self.set_status(201)
+        self.set_header('Location', self.reverse_url('post', user.phone))
+        
+        self.render_json(self.message("Created Success."))
 
     @authenticated
     @admin('phn', 'user')
