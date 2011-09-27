@@ -144,11 +144,11 @@ class PasswordHandler(BaseRequestHandler):
                 user.save()
                 msg = "Modified Success."
             else:
-                self.set_status(400)
-                msg = "password, old_password are reqeuired."
+                self.set_status(406)
+                msg = "The old password is not correct."
         else:
-            self.set_status(406)
-            msg = "The old password is not correct."
+            self.set_status(400)
+            msg = "password, old_password are reqeuired."
 
         self.render_json(msg)
 
