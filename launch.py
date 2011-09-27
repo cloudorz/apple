@@ -38,10 +38,10 @@ define("app_secret", default="jkafldjaklfjda978-=-^**&", help="app secret")
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-                (r'^/l/(?P<lid>\d+|)$', LoudHandler, {}, 'loud'),
+                (r'^/l/(?P<lid>\d+|)$', LoudHandler),
                 (r'^/l/list$', LoudSearchHandler),
                 (r'^/l/dels$', LoudManageHandler),
-                (r'^/u/(?P<phn>\d{11}|)$', UserHandler, {}, 'user'),
+                (r'^/u/(?P<phn>\d{11}|)$', UserHandler),
                 (r"^/u/(?P<phn>\d{11}|)/passwd$", PasswordHandler),
                 (r"^/auth$", AuthHandler),
                 (r"^/code$", SendCodeHandler),
