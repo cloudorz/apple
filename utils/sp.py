@@ -50,7 +50,7 @@ def sms_send(phone, msg, msg_type):
     try:
         response = http_client.fetch(uri)
     except httpclient.HTTPError, e:
-        print "Error:", e
+        ret_code = -99
     else:
         ret_code = int(response.body)
 
