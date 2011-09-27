@@ -33,7 +33,7 @@ class LoudHandler(BaseRequestHandler):
 
         if loud.save():
             self.set_status(201)
-            self.set_header('Location', self.reverse_url('loud', loud.phone))
+            self.set_header('Location', "http://%s%s" % (self.request.host, self.reverse_url('loud', loud.id)))
             msg = self.message("Created Success.")
         else:
             self.set_status(400)
