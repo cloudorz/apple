@@ -65,3 +65,4 @@ class BaseRequestHandler(tornado.web.RequestHandler):
     def is_available_client(self):
         app_key = self.get_argument('ak')
         return app_key == options.app_key
+

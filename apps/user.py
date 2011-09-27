@@ -1,6 +1,6 @@
 # coding: utf-8
 
-import uuid, datetime
+import uuid, datetime, re
 
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.state import InstanceState
@@ -9,7 +9,7 @@ from tornado.web import HTTPError
 
 from apps import BaseRequestHandler
 from apps.models import User, Loud
-from utils.decorator import authenticated, availabelclient
+from utils.decorator import authenticated, availabelclient, admin, owner
 from utils.constants import Fail, Success
 from utils.imagepp import save_images
 from utils.sp import sms_send, ret_code2desc
@@ -24,7 +24,7 @@ class UserHandler(BaseRequestHandler):
         if user:
             info = user.user_to_dict(self.current_user)
         else:
-            info = None
+            raise HTTPError(404)
 
         self.render_json(info)
 
@@ -38,11 +38,10 @@ class UserHandler(BaseRequestHandler):
         self.render_json(user.save() and Success or Fail)
 
     @authenticated
-    def put(self, phn):
+    @admin('phn', 'user')
+    def put(self, user):
         ''' The User object can't modify phone
         '''
-        user = self.current_user
-
         data = self.get_data()
         user.from_dict(data)
 
@@ -51,11 +50,18 @@ class UserHandler(BaseRequestHandler):
     @authenticated
     def delete(self, phn):
         # PS: delete all relation data user_id = 0
-        self.db.delete(self.current_user) 
-        self.db.commit()
+        user = User.query.get_by_phone(phn)
+
+        if user and user.admin_by(self.current_user):
+            self.db.delete(user) 
+            self.db.commit()
+        else:
+            raise HTTPError(403)
         
-        # delete user data 
         self.render_json(Success)
+
+    def get_recipient(self, phn):
+        return User.query.get_by_phone(phn)
 
 
 class AuthHandler(BaseRequestHandler):
@@ -78,16 +84,24 @@ class AuthHandler(BaseRequestHandler):
 class PasswordHandler(BaseRequestHandler):
 
     @authenticated
-    def get(self):
-        # FIXME  secure issue
-        pw = self.get_argument('pw')
+    def get(self, phn):
+        user = User.query.get_by_phone(phn)
+
+        info = Fail
+        if user and user.admin_by(self.current_user):
+            # FIXME  secure issue
+            pw = self.get_argument('pw')
+            if user.authenticate(pw):
+                info = Success
+        else:
+            raise HTTPError(403)
 
         self.render_json(self.current_user.authenticate(pw) and Success or Fail)
 
     @availabelclient
-    def post(self):
+    def post(self, phn):
         info = Fail
-        user = User.query.get_by_phone(self.get_argument('p'))
+        user = User.query.get_by_phone(phn)
         if user:
             new_password = generate_password()
 
@@ -99,7 +113,7 @@ class PasswordHandler(BaseRequestHandler):
         self.render_json(info)
 
     @authenticated
-    def put(self):
+    def put(self, phn):
         data = self.get_data()
         user = self.current_user
 

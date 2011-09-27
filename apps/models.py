@@ -90,6 +90,9 @@ class User(Base):
     def owner_by(self, u):
         return u and u.id == self.id
 
+    def admin_by(self, u):
+        return self.owner_by(u) or u.is_admin
+
     def authenticate(self, password):
         return self.password == hashlib.md5(password).hexdigest()
 
@@ -155,6 +158,9 @@ class Loud(Base):
 
     def owner_by(self, u):
         return u and u.id == self.user_id
+
+    def admin_by(self, u):
+        return self.owner_by(u) or u.is_admin
     
     def loud_to_dict(self):
         loud_dict = self.to_dict(exclude=['user_id', 'block'])

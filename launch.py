@@ -42,8 +42,8 @@ class Application(tornado.web.Application):
                 (r'^/l/list$', LoudSearchHandler),
                 (r'^/l/dels$', LoudManageHandler),
                 (r'^/u/(\d{11}|)$', UserHandler),
+                (r"^/u/(\d{11}|)/passwd$", PasswordHandler),
                 (r"^/auth$", AuthHandler),
-                (r"^/pass$", PasswordHandler),
                 (r"^/code$", SendCodeHandler),
                 (r"^/upload$", UploadHandler),
                 ]
