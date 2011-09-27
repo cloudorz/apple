@@ -2,7 +2,7 @@
 
 from apps import BaseRequestHandler
 from apps.models import User, Loud
-from utils.decorator import authenticated
+from utils.decorator import authenticated, admin, owner
 from utils.constants import Fail, Success
 
 class LoudHandler(BaseRequestHandler):
@@ -43,15 +43,15 @@ class LoudHandler(BaseRequestHandler):
         self.render_json(msg)
 
     @authenticated
-    def delete(self, lid):
-        loud = Loud.query.get_by_key(lid)
-        msg = Fail
-        if loud and loud.owner_by(self.current_user):
-            loud.block = True
-            loud.save()
-            msg = Success
+    @admin('lid', 'loud')
+    def delete(self, loud):
+        loud.block = True
+        loud.save()
 
-        self.render_json(msg)
+        self.render_json(Success)
+
+    def get_recipient(self, lid):
+        return Loud.query.get_by_key(lid)
 
 
 class LoudSearchHandler(BaseRequestHandler):
