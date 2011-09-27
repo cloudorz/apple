@@ -48,15 +48,16 @@ class UserHandler(BaseRequestHandler):
         self.render_json(user.save() and Success or Fail)
 
     @authenticated
-    def delete(self, phn):
+    @admin('phn', 'user')
+    def delete(self, user):
         # PS: delete all relation data user_id = 0
-        user = User.query.get_by_phone(phn)
 
-        if user and user.admin_by(self.current_user):
+        if user.owner_by(self.current_user):
             self.db.delete(user) 
             self.db.commit()
         else:
-            raise HTTPError(403)
+            user.block = True
+            user.save()
         
         self.render_json(Success)
 
@@ -84,19 +85,15 @@ class AuthHandler(BaseRequestHandler):
 class PasswordHandler(BaseRequestHandler):
 
     @authenticated
-    def get(self, phn):
-        user = User.query.get_by_phone(phn)
+    @admin('phn', 'user')
+    def get(self, user):
+        pw = self.get_argument('pw')
 
         info = Fail
-        if user and user.admin_by(self.current_user):
-            # FIXME  secure issue
-            pw = self.get_argument('pw')
-            if user.authenticate(pw):
-                info = Success
-        else:
-            raise HTTPError(403)
+        if user.authenticate(pw):
+            info = Success
 
-        self.render_json(self.current_user.authenticate(pw) and Success or Fail)
+        self.render_json(info)
 
     @availabelclient
     def post(self, phn):
@@ -113,9 +110,9 @@ class PasswordHandler(BaseRequestHandler):
         self.render_json(info)
 
     @authenticated
-    def put(self, phn):
+    @admin('phn', 'user')
+    def put(self, user):
         data = self.get_data()
-        user = self.current_user
 
         info = Fail
         if 'password' in data and 'old_password' in data and user.authenticate(data['old_password']):
@@ -124,6 +121,9 @@ class PasswordHandler(BaseRequestHandler):
                 info = Success
 
         self.render_json(info)
+
+    def get_recipient(self, phn):
+        return User.query.get_by_phone(phn)
 
 
 class UploadHandler(BaseRequestHandler):
