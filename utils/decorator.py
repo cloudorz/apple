@@ -29,7 +29,7 @@ def admin(label_name, obj_name):
     def inneradmin(method):
         @functools.wraps(method)
         def wrapper(self, *args, **kwargs):
-            obj = self.get_recipient(kwargs[label_name])
+            obj = self.get_recipient(kwargs.pop(label_name, None))
             if not (obj and obj.admin_by(self.current_user)):
                 raise HTTPError(403)
             kwargs[obj_name] = obj
