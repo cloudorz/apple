@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from utils.coredb import BaseQuery, Base
 from utils.escape import json_encode, json_decode
 
-# TODO #2 redis cache the user's loud-id set  and when signup cache the pre-user's phone number
+# TODO #2 redis cache the user's loud-id set  and token
 
 class UserQuery(BaseQuery):
     def get_by_phone(self, phn):

@@ -3,7 +3,7 @@
 import httplib, datetime
 
 import tornado.web
-
+from tornado.web import HTTPError
 from tornado.options import options
 
 from utils.escape import json_encode, json_decode
@@ -31,20 +31,18 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         '''
         # the content type is not "application/json"
         if not self.is_pretty:
-            data =  None
-        # FIXME return
+            raise HTTPError(415)
 
         try:
             data = self.dejson(self.request.body);
-        except ValueError:
-            # the data is not the right josn format
-            data = None
+        except (ValueError,TypeError), e:
+            raise HTTPError(415) # the data is not the right josn format
 
         return data
 
     @property
     def is_pretty(self):
-        return self.request.headers.get('Content-Type', '').strip().lower() == 'application/json'
+        return self.request.headers.get('Content-Type', '').spit(';').pop(0).strip().lower() == 'application/json'
 
     def get_error_html(self, status_code, **kwargs):
         ''' all error response where json data {'code': ..., 'msg': ...}
@@ -53,7 +51,7 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 
     # render data string for response
     def render_json(self, data, **kwargs):
-        self.set_header('Content-Type', 'Application/json')
+        self.set_header('Content-Type', 'Application/json; charset=UTF-8')
         self.write(self.json(data))
 
     def get_current_user(self):

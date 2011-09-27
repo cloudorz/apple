@@ -5,6 +5,8 @@ import uuid, datetime
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.state import InstanceState
 
+from tornado.web import HTTPError
+
 from apps import BaseRequestHandler
 from apps.models import User, Loud
 from utils.decorator import authenticated, availabelclient
@@ -77,6 +79,7 @@ class PasswordHandler(BaseRequestHandler):
 
     @authenticated
     def get(self):
+        # FIXME  secure issue
         pw = self.get_argument('pw')
 
         self.render_json(self.current_user.authenticate(pw) and Success or Fail)
@@ -128,9 +131,11 @@ class SendCodeHandler(BaseRequestHandler):
         phone = self.get_argument('p')
         code = self.get_argument('code')
         user = User.query.get_by_phone(phone)
+
+        if user: raise HTTPError(409)
         
         info = Fail
-        if phone and code and not user and sms_send(phone, {'code': code}, 1) > 0:
+        if phone and code and sms_send(phone, {'code': code}, 1) > 0:
             info = Success
 
         self.render_json(info)
