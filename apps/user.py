@@ -38,7 +38,7 @@ class UserHandler(BaseRequestHandler):
         user.save()
 
         self.set_status(201)
-        self.set_header('Location', self.reverse_url('post', user.phone))
+        self.set_header('Location', self.reverse_url('UserHandler', user.phone))
         
         self.render_json(self.message("Created Success."))
 
