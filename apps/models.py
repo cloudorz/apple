@@ -110,18 +110,20 @@ class User(Base):
     def user_to_dict_by_other(self):
         #  (id, link, phone, name, avatar, last_lon, last_lat, updated)
         info = self.to_dict(include=['phone', 'name', 'avatar', 'last_lat', 'last_lon', 'updated'])
-        info['link'] = self.get_link()
         info['id'] = self.get_urn_id()
+        info['link'] = self.get_link()
+        info['avatar'] = self.get_avatar_link()
 
         return info
 
     def user_to_dict_by_owner(self):
-        # (content longitude latitude grade created phone name avatar last_longitude last_atitude
-        # loud_num is_admin distance updated created)
-        info = self.to_dict(include=['phone', 'name', 'avatar', 'last_lat', 'last_lon','is_admin',
+        # (id, link, phone, name, avatar, last_lat, last_lon, is_admin, updated, created, radius,
+        # loud_num)
+        info = self.to_dict(include=['phone', 'name', 'last_lat', 'last_lon','is_admin',
             'radius', 'updated', 'created'])
         info['id'] = self.get_urn_id()
         info['link'] = self.get_link()
+        info['avatar'] = self.get_avatar_link()
         info['loud_num'] = self.loud_num
 
         return info
