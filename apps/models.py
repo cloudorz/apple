@@ -112,18 +112,18 @@ class User(Base):
         info = self.to_dict(include=['phone', 'name', 'avatar', 'last_lat', 'last_lon', 'updated'])
         info['id'] = self.get_urn_id()
         info['link'] = self.get_link()
-        info['avatar'] = self.get_avatar_link()
+        info['avatar_link'] = self.get_avatar_link()
 
         return info
 
     def user_to_dict_by_owner(self):
         # (id, link, phone, name, avatar, last_lat, last_lon, is_admin, updated, created, radius,
         # loud_num)
-        info = self.to_dict(include=['phone', 'name', 'last_lat', 'last_lon','is_admin',
+        info = self.to_dict(include=['phone', 'name', 'avatar', 'last_lat', 'last_lon','is_admin',
             'radius', 'updated', 'created'])
         info['id'] = self.get_urn_id()
         info['link'] = self.get_link()
-        info['avatar'] = self.get_avatar_link()
+        info['avatar_link'] = self.get_avatar_link()
         info['loud_num'] = self.loud_num
 
         return info
@@ -178,8 +178,9 @@ class Loud(Base):
     def loud_to_dict(self):
         loud_dict = self.to_dict(include=['content', 'grade', 'address', 'lat', 'lon', 'created'])
         loud_dict['user'] = self.user.user_to_dict_by_other()
-        # FIXME let me out here
-        #loud_dict['id'] = self.get_urn_id()
+        
+        loud_dict['id'] = self.get_urn_id()
+        loud_dict['lid'] = self.id # FIXME let me out here
         loud_dict['link'] = self.get_link()
 
         return loud_dict
