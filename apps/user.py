@@ -147,13 +147,13 @@ class PasswordHandler(BaseRequestHandler):
             if  user.authenticate(data['old_password']):
                 user.from_dict(data)
                 user.save()
-                msg = "Modified Success."
+                msg = self.message("Modified Success.")
             else:
                 self.set_status(406)
-                msg = "The old password is not correct."
+                msg = self.message("The old password is not correct.")
         else:
             self.set_status(400)
-            msg = "password, old_password are reqeuired."
+            msg = self.message("password, old_password are reqeuired.")
 
         self.render_json(msg)
 
@@ -185,12 +185,12 @@ class SendCodeHandler(BaseRequestHandler):
             user = User.query.get_by_phone(data['phone'])
             if not user:
                 sms_send(data['phone'], {'code': data['code']}, 1)
-                msg = "Message be sent."
+                msg = self.message("Message be sent.")
             else:
                 self.set_status(409)
-                msg = "The user is already existed."
+                msg = self.message("The user is already existed.")
         else:
             self.set_status(400)
-            msg = "phone, code fields are required."
+            msg = self.message("phone, code fields are required.")
 
         self.render_json(msg)

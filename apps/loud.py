@@ -1,9 +1,12 @@
 # coding: utf-8
 
+from tornado.web import HTTPError
+
 from apps import BaseRequestHandler
 from apps.models import User, Loud
 from utils.decorator import authenticated, admin, owner
 from utils.constants import Fail, Success
+
 
 class LoudHandler(BaseRequestHandler):
 
@@ -21,6 +24,7 @@ class LoudHandler(BaseRequestHandler):
         else:
             louds = Loud.query.get_by_cycle(self.get_argument('lat'), self.get_argument('lon'))
             
+            # FIXME
             loud_dicts = [e.loud_to_dict() for e in louds]
             self.render_json({'add': loud_dicts, 'del': []})
             return
@@ -88,3 +92,88 @@ class LoudManageHandler(BaseRequestHandler):
         res = [{'pk':e.id, 'content': e.content} for e in louds]
 
         self.render_json(res)
+
+
+class SearchLoudhandler(BaseRequestHandler):
+
+    def get(self):
+        condition = self.get_argument('filter')
+        if ':' in condition:
+            field, data = condition.split(':')
+        else:
+            raise HTTPError(400)
+
+        handle_q = {
+                'author': self.q_author,
+                'position': self.q_position,
+                'key': self.q_key,
+                }
+
+        if field in handle_q:
+            loud_dict = handle_q[field](data)
+        else:
+            raise HTTPError(400)
+
+        self.render_json(loud_dict)
+
+    def q_author(self, data):
+        phn = data
+        sort_str = self.get_argument('sortBy')
+        st = int(self.get_argument('start'))
+        limit = int(self.get_argument('offset'))
+
+        user = User.query.get_by_phone(phn)
+        louds = Loud.query.filter(Loud.user==user).\
+                           filter(Loud.block==False).\
+                           filter(Loud.id>0).\
+                           order_by(sort_str).\
+                           limit(limit).\
+                           offset(st)
+        res = {
+                'louds': [e.loud_to_dict() for e in louds],
+                'total': louds.count(),
+                'link': self.request.full_url(),
+                }
+
+        # TODO compute the  prev or next 
+
+        return res
+
+
+    def q_position(self, data):
+        lat, lon = data.split(',')
+        sort_str = self.get_argument('sortBy')
+        st = int(self.get_argument('start'))
+        limit = int(self.get_argument('offset'))
+
+        louds = Loud.query.get_by_cycle2(lat, lon, st, limit, sort_str)
+
+        res = {
+                'louds': [e.loud_to_dict() for e in louds],
+                'total': louds.count(),
+                'link': self.request.full_url(),
+                }
+
+        # TODO compute the  prev or next 
+
+        return res
+
+    def q_key(self, data):
+        lat,lon,q = data.split(',')
+
+        sort_str = self.get_argument('sortBy')
+        st = int(self.get_argument('start'))
+        limit = int(self.get_argument('offset'))
+
+        louds = Loud.query.filter(Loud.content.like('%'+q+'%')).get_by_cycle2(lat, lon, st, limit, sort_str)
+
+        res = {
+                'louds': [e.loud_to_dict() for e in louds],
+                'total': louds.count(),
+                'link': self.request.full_url(),
+                }
+
+        # TODO compute the  prev or next 
+
+        return res
+
