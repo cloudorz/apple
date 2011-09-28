@@ -21,7 +21,7 @@ class LoudHandler(BaseRequestHandler):
         else:
             louds = Loud.query.get_by_cycle(self.get_argument('lat'), self.get_argument('lon'))
             
-            loud_dicts = [e.loud_to_dict() for e in louds if e.id in louds]
+            loud_dicts = [e.loud_to_dict() for e in louds]
             self.render_json({'add': loud_dicts, 'del': []})
             return
 
