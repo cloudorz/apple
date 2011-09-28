@@ -44,7 +44,6 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
                 url(r'^/l/(?P<lid>\d+|)$', LoudHandler, name='loud'),
-                url(r'^/l/list$', LoudSearchHandler),
                 url(r'^/l/dels$', LoudManageHandler),
                 url(r'^/u/(?P<phn>\d{11}|)$', UserHandler, name='user'),
                 url(r"^/u/(?P<phn>\d{11}|)/passwd$", PasswordHandler),
