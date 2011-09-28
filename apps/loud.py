@@ -1,6 +1,8 @@
 # coding: utf-8
 
 from tornado.web import HTTPError
+from tornado.httputil import url_concat
+from tornado.options import options
 
 from apps import BaseRequestHandler
 from apps.models import User, Loud
@@ -127,13 +129,28 @@ class SearchLoudhandler(BaseRequestHandler):
                            filter(Loud.block==False).\
                            filter(Loud.id>0).\
                            order_by(sort_str)
+        total = louds.count()
         res = {
                 'louds': [e.loud_to_dict() for e in louds.limit(limit).offset(st)],
-                'total': louds.count(),
+                'total': total,
                 'link': self.request.full_url(),
                 }
 
         # TODO compute the  prev or next 
+        query_dict = {
+                'filter': self.get_argument('filter'),
+                'sortBy': sort_str,
+                'start': st,
+                'offset': limit,
+                }
+
+        if st + limit < total:
+            query_dict['start'] = st + limit
+            res['next'] = url_concat("%s%s" % (options.site_uri, self.request.path), query_dict)
+
+        if st > 0:
+            query_dict['start'] = max(st - limit, 0)
+            res['prev'] = url_concat("%s%s" % (options.site_uri, self.request.path), query_dict)
 
         return res
 
