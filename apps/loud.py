@@ -98,10 +98,8 @@ class SearchLoudhandler(BaseRequestHandler):
 
     def get(self):
         condition = self.get_argument('filter')
-        print condition, 'fuck 1'
         if ':' in condition:
             field, data = condition.split(':')
-            print field, 'fuck 2'
         else:
             raise HTTPError(400)
 
@@ -113,7 +111,6 @@ class SearchLoudhandler(BaseRequestHandler):
 
         if field in handle_q:
             loud_dict = handle_q[field](data)
-            print loud_dict, 'fuck 3'
         else:
             raise HTTPError(400)
 
@@ -121,23 +118,17 @@ class SearchLoudhandler(BaseRequestHandler):
 
     def q_author(self, data):
         phn = data
-        print phn, 'fuck 4'
         sort_str = self.get_argument('sortBy')
         st = int(self.get_argument('start'))
         limit = int(self.get_argument('offset'))
-        print sort_str, st, limit, 'fuck 5'
 
         user = User.query.get_by_phone(phn)
         louds = Loud.query.filter(Loud.user==user).\
                            filter(Loud.block==False).\
                            filter(Loud.id>0).\
-                           order_by(sort_str).\
-                           limit(limit).\
-                           offset(st)
-        print 'fuck6'
-        print louds
+                           order_by(sort_str)
         res = {
-                'louds': [e.loud_to_dict() for e in louds],
+                'louds': [e.loud_to_dict() for e in louds.limit(limit).offset(st)],
                 'total': louds.count(),
                 'link': self.request.full_url(),
                 }
