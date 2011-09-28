@@ -23,6 +23,10 @@ from utils.coredb import sql_db
 # server
 define('port', default=8888, help="run on the given port", type=int)
 
+#URI
+define('site_uri', define="http://rest.whohelp.me", type=str, help="site uri")
+define('static_uri', define="http://static.whohelp.me", type=str, help="static uri")
+
 # database
 define('db_uri', default="mysql://root:123@localhost/apple?charset=utf8", type=str, help="connect to mysql")
 

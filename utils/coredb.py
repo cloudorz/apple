@@ -13,6 +13,7 @@ class SQLAlchemy(object):
     def init_app(self, app=None):
         if app:
             self.db_session = app.db_session
+            self.reverse_uri = app.reverse_url
 
 sql_db = SQLAlchemy()
 
@@ -43,13 +44,13 @@ Base = declarative_base()
 Base.query_class = BaseQuery
 Base.query = _QueryProperty()
 
-def obj_to_dict(self, exclude=[]):
+def obj_to_dict(self, include=[]):
     ''' convent the object to the dcit type
     not contain the relating objects
     '''
-    exclude.append('_sa_instance_state')
+    #exclude.append('_sa_instance_state')
     dict_obj = vars(self).copy()
-    [dict_obj.pop(e) for e in dict_obj.keys() if e in exclude]
+    [dict_obj.pop(e) for e in dict_obj.keys() if e not in include]
        
     return dict_obj
 
@@ -60,11 +61,16 @@ def obj_from_dict(self, data):
 
 def obj_save(self):
     if self.can_save():
-        sql_db.db_session.add(self)
+        if not self.id: sql_db.db_session.add(self)
         sql_db.db_session.commit()
         return True
+
+def fake_get_urn_id(self):
+    return "urn:%s:%s" % (self.__tablename__, self.id)
         
 
+Base.reverse_uri = sql_db.reverse_uri
 Base.to_dict = obj_to_dict
 Base.from_dict = obj_from_dict
 Base.save = obj_save
+Base.get_urn_id = fake_get_urn_id

@@ -33,11 +33,11 @@ class LoudHandler(BaseRequestHandler):
 
         if loud.save():
             self.set_status(201)
-            self.set_header('Location', "http://%s%s" % (self.request.host, self.reverse_url('loud', loud.id)))
+            self.set_header('Location', loud.get_link())
             msg = self.message("Created Success.")
         else:
             self.set_status(400)
-            msg = self.message("content,lat,lon fields are required.")
+            msg = self.message("content,lat,lon,address fields are required.")
 
         # addtional operation add the position
         self.current_user.last_lat = data['lat']

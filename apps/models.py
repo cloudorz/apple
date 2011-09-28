@@ -6,6 +6,8 @@ from sqlalchemy import sql, Column, String, Integer, Boolean, DateTime, Float, F
 from sqlalchemy.orm import relation, backref, column_property, synonym
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
+from tornado.options import options
+
 from utils.coredb import BaseQuery, Base
 from utils.escape import json_encode, json_decode
 
@@ -106,25 +108,34 @@ class User(Base):
         return info
 
     def user_to_dict_by_other(self):
-        # non self get the (phone, name, avatar, last_longitude, last_atitude, updated)
-        info = self.to_dict(exclude=['id', '_shadow', 'shadow', '_password', 'password', 'token', 'radius', 'is_admin', 'block', 'created', 'louds'])
+        #  (id, link, phone, name, avatar, last_lon, last_lat, updated)
+        info = self.to_dict(include=['phone', 'name', 'avatar', 'last_lat', 'last_lon', 'updated'])
+        info['link'] = self.get_link()
+        info['id'] = self.get_urn_id()
 
         return info
 
     def user_to_dict_by_owner(self):
-        # user get the (content longitude latitude grade created phone name avatar last_longitude last_atitude
+        # (content longitude latitude grade created phone name avatar last_longitude last_atitude
         # loud_num is_admin distance updated created)
-        info = self.to_dict(exclude=['id', '_password', 'password', 'token', 'block'])
+        info = self.to_dict(include=['phone', 'name', 'avatar', 'last_lat', 'last_lon','is_admin',
+            'radius', 'updated', 'created'])
+        info['id'] = self.get_urn_id()
+        info['link'] = self.get_link()
         info['loud_num'] = self.loud_num
-        info['louds'] = [e.to_dict(exclude=['id', 'user_id', 'block']) for e in self.louds]
 
         return info
 
     def user_to_dict_by_auth(self):
-        info = self.to_dict(exclude=['id', '_shadow', 'shadow', '_password', 'password', 'radius',
-            'is_admin', 'block', 'created', 'louds', 'avatar', 'last_lon', 'last_lat'])
+        info = self.to_dict(include=['name', 'token', 'phone', 'updated'])
 
         return info
+
+    def get_link(self):
+        return "%s%s" % (options.site_uri, self.reverse_uri('user', self.phone))
+
+    def get_avatar_link(self):
+        return "%s/%s" % (options.static_uri, self.avatar)
 
 
 class Loud(Base):
@@ -163,10 +174,16 @@ class Loud(Base):
         return self.owner_by(u) or u.is_admin
     
     def loud_to_dict(self):
-        loud_dict = self.to_dict(exclude=['user_id', 'block'])
-        loud_dict['user'] = self.user.to_dict(exclude=['id', '_password', 'password', 'token', 'radius','updated', 'is_admin', 'block', 'created', 'last_lon', 'last_lat'])
+        loud_dict = self.to_dict(include=['content', 'grade', 'address', 'lat', 'lon', 'created'])
+        loud_dict['user'] = self.user.user_to_dict_by_other()
+        # FIXME let me out here
+        #loud_dict['id'] = self.get_urn_id()
+        loud_dict['link'] = self.get_link()
 
         return loud_dict
+
+    def get_link(self):
+        return "%s%s" % (options.site_uri, self.reverse_uri('loud', self.id))
 
 # user's all louds number
 User.loud_num = column_property(sql.select([sql.func.count(Loud.id)]).\

@@ -38,7 +38,7 @@ class UserHandler(BaseRequestHandler):
 
         if user.save():
             self.set_status(201)
-            self.set_header('Location', "http://%s%s" % (self.request.host, self.reverse_url('loud', user.phone)))
+            self.set_header('Location', user.get_link())
             msg = self.message("Created Success.")
         else:
             self.set_status(400)
