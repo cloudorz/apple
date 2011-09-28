@@ -52,10 +52,15 @@ class UserHandler(BaseRequestHandler):
         ''' The User object can't modify phone
         '''
         data = self.get_data()
-        user.from_dict(data)
-        user.save()
+        if 'phone' in data or 'password' in data:
+            self.set_status(403)
+            self.message("phone can't be changed, password can't changed directly.")
+        else:
+            user.from_dict(data)
+            user.save()
+            msg = self.message("Modfied Success.")
 
-        self.render_json(self.message("Modfied Success."))
+        self.render_json(msg)
 
     @authenticated
     @admin('phn', 'user')

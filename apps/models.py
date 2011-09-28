@@ -18,12 +18,14 @@ class UserQuery(BaseQuery):
         ''' Get user from users table return the User object 
         or Not exisit and Multi exisit return None
         '''
+        # FIXME
         return self.filter_by(phone=phn, block=False).first()
     
     def get_by_token(self, token):
         ''' Get user from users table return the User object 
         or Not exisit and Multi exisit return None
         '''
+        # FIXME
         return self.filter_by(token=token, block=False).first()
 
 
