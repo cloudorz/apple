@@ -3,6 +3,7 @@
 from tornado.web import HTTPError
 from tornado.httputil import url_concat
 from tornado.options import options
+from tornado.escape import url_unescape
 
 from apps import BaseRequestHandler
 from apps.models import User, Loud
@@ -146,11 +147,11 @@ class SearchLoudhandler(BaseRequestHandler):
 
         if st + limit < total:
             query_dict['start'] = st + limit
-            res['next'] = url_concat("%s%s" % (options.site_uri, self.request.path), query_dict)
+            res['next'] = url_unescape(url_concat("%s%s" % (options.site_uri, self.request.path), query_dict))
 
         if st > 0:
             query_dict['start'] = max(st - limit, 0)
-            res['prev'] = url_concat("%s%s" % (options.site_uri, self.request.path), query_dict)
+            res['prev'] = url_unescape(url_concat("%s%s" % (options.site_uri, self.request.path), query_dict))
 
         return res
 
