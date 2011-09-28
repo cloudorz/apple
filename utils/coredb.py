@@ -1,9 +1,18 @@
 # coding: utf-8
+''' Custom the Base Model class.
+1. create class query db session
+2. create db -> db_sesssion
+3. add some method to Base
+'''
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import class_mapper, Query
 from sqlalchemy.orm.exc import UnmappedClassError, NoResultFound, MultipleResultsFound
 
+# create the Base class
+Base = declarative_base()
+
+# transfer app for get the db_session
 class SQLAlchemy(object):
     ''' Get the sqlalchemy session
     '''
@@ -13,7 +22,8 @@ class SQLAlchemy(object):
     def init_app(self, app=None):
         if app:
             self.db_session = app.db_session
-            self.reverse_uri = app.reverse_url
+            Base.db = app.db_session
+            Base.reverse_uri = app.reverse_url
 
 sql_db = SQLAlchemy()
 
@@ -40,7 +50,6 @@ class _QueryProperty(object):
             return None
 
 # this way create class vars is ok, the subclass also can inherit it
-Base = declarative_base()
 Base.query_class = BaseQuery
 Base.query = _QueryProperty()
 
@@ -61,15 +70,14 @@ def obj_from_dict(self, data):
 
 def obj_save(self):
     if self.can_save():
-        if not self.id: sql_db.db_session.add(self)
-        sql_db.db_session.commit()
+        if not self.id: self.db.add(self)
+        self.db.commit()
         return True
 
 def fake_get_urn_id(self):
     return "urn:%s:%s" % (self.__tablename__, self.id)
         
 
-Base.reverse_uri = sql_db.reverse_uri
 Base.to_dict = obj_to_dict
 Base.from_dict = obj_from_dict
 Base.save = obj_save
