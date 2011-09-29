@@ -97,9 +97,9 @@ class LoudManageHandler(BaseRequestHandler):
 class SearchLoudhandler(BaseRequestHandler):
 
     def get(self):
-        condition = self.get_argument('ff')
-        if ':' in condition:
-            field, data = condition.split(':')
+        q = self.get_argument('q')
+        if ':' in q:
+            field, value = q.split(':')
         else:
             raise HTTPError(400)
 
@@ -111,8 +111,8 @@ class SearchLoudhandler(BaseRequestHandler):
 
         if field in handle_q:
             qdict = QDict(
-                        data=data,
-                        ff=condition,
+                        q=q,
+                        v=value,
                         sort=self.get_argument('qs'),
                         start=int(self.get_argument('st')),
                         num=int(self.get_argument('qn')),
@@ -125,7 +125,7 @@ class SearchLoudhandler(BaseRequestHandler):
 
     def q_author(self, q):
         # query it
-        phn = q.data
+        phn = q.v
         louds = Loud.query.filter(Loud.user.has(User.phone==phn)).\
                            filter(Loud.block==False).\
                            filter(Loud.id>0).\
@@ -134,7 +134,7 @@ class SearchLoudhandler(BaseRequestHandler):
         # composite the results collection
         total = louds.count()
         query_dict = {
-                'ff': q.ff,
+                'q': q.q,
                 'qs': q.sort,
                 'st': q.start,
                 'qn': q.num,
