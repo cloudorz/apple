@@ -1,9 +1,6 @@
 # coding: utf-8
 
 from tornado.web import HTTPError
-from tornado.httputil import url_concat
-from tornado.options import options
-from tornado.escape import url_unescape
 
 from apps import BaseRequestHandler
 from apps.models import User, Loud
@@ -100,7 +97,7 @@ class LoudManageHandler(BaseRequestHandler):
 class SearchLoudhandler(BaseRequestHandler):
 
     def get(self):
-        condition = self.get_argument('filter')
+        condition = self.get_argument('ff')
         if ':' in condition:
             field, data = condition.split(':')
         else:
@@ -121,45 +118,47 @@ class SearchLoudhandler(BaseRequestHandler):
 
     def q_author(self, data):
         phn = data
+        # get query arguments
         sort_str = self.get_argument('sortBy')
-        st = int(self.get_argument('start'))
-        limit = int(self.get_argument('offset'))
+        start = int(self.get_argument('st'))
+        num_per_page = int(self.get_argument('pn'))
 
-        user = User.query.get_by_phone(phn)
-        louds = Loud.query.filter(Loud.user==user).\
+        # query it
+        louds = Loud.query.filter(Loud.user.has(User.phone==phn)).\
                            filter(Loud.block==False).\
                            filter(Loud.id>0).\
                            order_by(sort_str)
+
+        # composite the results collection
         total = louds.count()
         res = {
-                'louds': [e.loud_to_dict() for e in louds.limit(limit).offset(st)],
+                'louds': [e.loud_to_dict() for e in louds.limit(num_per_page).offset(start)],
                 'total': total,
                 'link': self.request.full_url(),
                 }
 
-        # TODO compute the  prev or next 
         query_dict = {
-                'filter': self.get_argument('filter'),
-                'sortBy': sort_str,
-                'start': st,
-                'offset': limit,
+                'ff': self.get_argument('ff'),
+                'sb': sort_str,
+                'st': start,
+                'pn': num_per_page,
                 }
 
-        if st + limit < total:
-            query_dict['start'] = st + limit
-            res['next'] = url_unescape(url_concat("%s%s" % (options.site_uri, self.request.path), query_dict))
+        if start + num_per_page < total:
+            query_dict['st'] = start + num_per_page
+            res['next'] = self.full_uri(query_dict)
 
-        if st > 0:
-            query_dict['start'] = max(st - limit, 0)
-            res['prev'] = url_unescape(url_concat("%s%s" % (options.site_uri, self.request.path), query_dict))
+        if start > 0:
+            query_dict['st'] = max(start - num_per_page, 0)
+            res['prev'] = self.full_uri(query_dict)
 
         return res
 
     def q_position(self, data):
         lat, lon = data.split(',')
         sort_str = self.get_argument('sortBy')
-        st = int(self.get_argument('start'))
-        limit = int(self.get_argument('offset'))
+        st = int(self.get_argument('st'))
+        limit = int(self.get_argument('pn'))
 
         louds = Loud.query.get_by_cycle2(lat, lon, st, limit, sort_str)
 
@@ -177,10 +176,10 @@ class SearchLoudhandler(BaseRequestHandler):
         lat,lon,q = data.split(',')
 
         sort_str = self.get_argument('sortBy')
-        st = int(self.get_argument('start'))
-        limit = int(self.get_argument('offset'))
+        st = int(self.get_argument('st'))
+        limit = int(self.get_argument('pn'))
 
-        louds = Loud.query.filter(Loud.content.like('%'+q+'%')).get_by_cycle2(lat, lon, st, limit, sort_str)
+        louds = Loud.query.ff(Loud.content.like('%'+q+'%')).get_by_cycle2(lat, lon, st, limit, sort_str)
 
         res = {
                 'louds': [e.loud_to_dict() for e in louds],

@@ -3,8 +3,11 @@
 import httplib, datetime
 
 import tornado.web
+
 from tornado.web import HTTPError
 from tornado.options import options
+from tornado.httputil import url_concat
+from tornado.escape import url_unescape
 
 from utils.escape import json_encode, json_decode
 from apps.models import User
@@ -68,3 +71,6 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 
     def message(self, msg):
         return {'msg': msg}
+
+    def full_uri(self, query_dict=None):
+        return url_unescape(url_concat("%s%s" % (options.site_uri, self.request.path), query_dict))
