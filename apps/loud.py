@@ -139,11 +139,11 @@ class SearchLoudhandler(BaseRequestHandler):
 
             if q.start + q.num < total:
                 query_dict['st'] = q.start + q.num
-                res['next'] = self.full_uri(query_dict)
+                loud_collection['next'] = self.full_uri(query_dict)
 
             if q.start > 0:
                 query_dict['st'] = max(q.start - q.num, 0)
-                res['prev'] = self.full_uri(query_dict)
+                loud_collection['prev'] = self.full_uri(query_dict)
         else:
             raise HTTPError(400)
 
