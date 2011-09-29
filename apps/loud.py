@@ -5,7 +5,7 @@ from tornado.web import HTTPError
 from apps import BaseRequestHandler
 from apps.models import User, Loud
 from utils.decorator import authenticated, admin, owner
-from utils.constants import Fail, Success
+from utils.mkthings import QDict
 
 
 class LoudHandler(BaseRequestHandler):
@@ -110,46 +110,48 @@ class SearchLoudhandler(BaseRequestHandler):
                 }
 
         if field in handle_q:
-            loud_dict = handle_q[field](data)
+            qdict = QDict(
+                        data=data,
+                        ff=condition,
+                        sort=self.get_argument('qs'),
+                        start=int(self.get_argument('st')),
+                        num=int(self.get_argument('qn')),
+                    )
+            loud_dict = handle_q[field](qdict)
         else:
             raise HTTPError(400)
 
         self.render_json(loud_dict)
 
-    def q_author(self, data):
-        phn = data
-        # get query arguments
-        sort_str = self.get_argument('sortBy')
-        start = int(self.get_argument('st'))
-        num_per_page = int(self.get_argument('pn'))
-
+    def q_author(self, q):
         # query it
+        phn = q.data
         louds = Loud.query.filter(Loud.user.has(User.phone==phn)).\
                            filter(Loud.block==False).\
                            filter(Loud.id>0).\
-                           order_by(sort_str)
+                           order_by(q.sort)
 
         # composite the results collection
         total = louds.count()
-        res = {
-                'louds': [e.loud_to_dict() for e in louds.limit(num_per_page).offset(start)],
-                'total': total,
-                'link': self.request.full_url(),
-                }
-
         query_dict = {
-                'ff': self.get_argument('ff'),
-                'sb': sort_str,
-                'st': start,
-                'pn': num_per_page,
+                'ff': q.ff,
+                'qs': q.sort,
+                'st': q.start,
+                'qn': q.num,
                 }
 
-        if start + num_per_page < total:
-            query_dict['st'] = start + num_per_page
+        res = {
+                'louds': [e.loud_to_dict() for e in louds.limit(q.num).offset(q.start)],
+                'total': total,
+                'link': self.full_uri(query_dict),
+                }
+
+        if q.start + q.num < total:
+            query_dict['st'] = q.start + q.num
             res['next'] = self.full_uri(query_dict)
 
-        if start > 0:
-            query_dict['st'] = max(start - num_per_page, 0)
+        if q.start > 0:
+            query_dict['st'] = max(q.start - q.num, 0)
             res['prev'] = self.full_uri(query_dict)
 
         return res
