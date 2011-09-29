@@ -104,7 +104,10 @@ class SearchLoudhandler(BaseRequestHandler):
             raise HTTPError(400)
 
         handle_q = {
-                'author': self.q_author,
+                'author': lambda phn: Loud.query\
+                        .filter(Loud.user.has(User.phone==phn))\
+                        .filter(Loud.block==False)\
+                        .filter(Loud.id>0),
                 'position': self.q_position,
                 'key': self.q_key,
                 }
@@ -117,62 +120,41 @@ class SearchLoudhandler(BaseRequestHandler):
                         start=int(self.get_argument('st')),
                         num=int(self.get_argument('qn')),
                     )
-            loud_dict = handle_q[field](qdict)
+            query_louds = handle_q[field](qdict.v)
+
+            # composite the results collection
+            total = query_louds.count()
+            query_dict = {
+                    'q': q.q,
+                    'qs': q.sort,
+                    'st': q.start,
+                    'qn': q.num,
+                    }
+
+            loud_collection = {
+                    'louds': [e.loud_to_dict() for e in query_louds.order_by(q.sort).limit(q.num).offset(q.start)],
+                    'total': total,
+                    'link': self.full_uri(query_dict),
+                    }
+
+            if q.start + q.num < total:
+                query_dict['st'] = q.start + q.num
+                res['next'] = self.full_uri(query_dict)
+
+            if q.start > 0:
+                query_dict['st'] = max(q.start - q.num, 0)
+                res['prev'] = self.full_uri(query_dict)
         else:
             raise HTTPError(400)
 
-        self.render_json(loud_dict)
-
-    def q_author(self, q):
-        # query it
-        phn = q.v
-        louds = Loud.query.filter(Loud.user.has(User.phone==phn)).\
-                           filter(Loud.block==False).\
-                           filter(Loud.id>0).\
-                           order_by(q.sort)
-
-        # composite the results collection
-        total = louds.count()
-        query_dict = {
-                'q': q.q,
-                'qs': q.sort,
-                'st': q.start,
-                'qn': q.num,
-                }
-
-        res = {
-                'louds': [e.loud_to_dict() for e in louds.limit(q.num).offset(q.start)],
-                'total': total,
-                'link': self.full_uri(query_dict),
-                }
-
-        if q.start + q.num < total:
-            query_dict['st'] = q.start + q.num
-            res['next'] = self.full_uri(query_dict)
-
-        if q.start > 0:
-            query_dict['st'] = max(q.start - q.num, 0)
-            res['prev'] = self.full_uri(query_dict)
-
-        return res
+        self.render_json(loud_collection)
 
     def q_position(self, data):
         lat, lon = data.split(',')
-        sort_str = self.get_argument('sortBy')
-        st = int(self.get_argument('st'))
-        limit = int(self.get_argument('pn'))
 
-        louds = Loud.query.get_by_cycle2(lat, lon, st, limit, sort_str)
+        louds = Loud.query.get_by_cycle(lat, lon, st, limit, sort_str)
 
-        res = {
-                'louds': [e.loud_to_dict() for e in louds],
-                'total': louds.count(),
-                'link': self.request.full_url(),
-                }
-
-        # TODO compute the  prev or next 
-
-        return res
+        return louds
 
     def q_key(self, data):
         lat,lon,q = data.split(',')
