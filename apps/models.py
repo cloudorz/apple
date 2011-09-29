@@ -35,8 +35,7 @@ class LoudQuery(BaseQuery):
         return self.filter(Loud.block==False).filter(Loud.user_id>0)
 
     def get_by_cycle2(self, user_lat, user_lon):
-        earth_r = 6378137
-        distance = 3000
+        earth_r, distance = options.er, options.cr
 
         # mysql functions 
         acos, sin, cos, pi, abs = sql.func.acos, sql.func.sin, sql.func.cos, sql.func.pi, sql.func.abs

@@ -27,6 +27,10 @@ define('port', default=8888, help="run on the given port", type=int)
 define('site_uri', default="http://rest.whohelp.me", type=str, help="site uri")
 define('static_uri', default="http://static.whohelp.me", type=str, help="static uri")
 
+#args
+define('er', default=6378137, type=float, help="the earth radius.")
+define('cr', default=2500, type=float, help="the cycle radius.")
+
 # database
 define('db_uri', default="mysql://root:123@localhost/apple?charset=utf8", type=str, help="connect to mysql")
 
