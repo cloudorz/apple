@@ -155,10 +155,10 @@ class AuthHandler(BaseRequestHandler):
         self.render_json(msg)
 
 
-class PasswordHandler(BaseRequestHandler):
+class ResetPasswordHandler(BaseRequestHandler):
 
     @availabelclient
-    def post(self, phn):
+    def put(self, phn):
 
         user = User.query.get_by_phone(phn)
         if user:
@@ -173,29 +173,6 @@ class PasswordHandler(BaseRequestHandler):
             msg = self.message("The user is not exsited.")
 
         self.render_json(msg)
-
-    @authenticated
-    @admin('phn', 'user')
-    def put(self, user):
-
-        data = self.get_data()
-
-        if 'password' in data and 'old_password' in data:
-            if  user.authenticate(data['old_password']):
-                user.from_dict(data)
-                user.save()
-                msg = self.message("Modified Success.")
-            else:
-                self.set_status(406)
-                msg = self.message("The old password is not correct.")
-        else:
-            self.set_status(400)
-            msg = self.message("password, old_password are reqeuired.")
-
-        self.render_json(msg)
-
-    def get_recipient(self, phn):
-        return User.query.get_by_phone(phn)
 
 
 class UploadHandler(BaseRequestHandler):
