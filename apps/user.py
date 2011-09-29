@@ -90,13 +90,18 @@ class UserHandler(BaseRequestHandler):
         ''' The User object can't modify phone
         '''
         data = self.get_data()
-        if 'phone' in data or 'password' in data:
+
+        if 'phone' in data:
             self.set_status(403)
-            self.message("phone can't be changed, password can't changed directly.")
+            msg = self.message("phone can't be changed.")
         else:
-            user.from_dict(data)
-            user.save()
-            msg = self.message("Modfied Success.")
+            if 'password' in data and not ('old_password' in data and user.authenticate(data['old_password'])):
+                self.set_status(412)
+                msg = self.message("Incorrect password.")
+            else:
+                user.from_dict(data)
+                user.save()
+                msg = self.message("Modfied Success.")
 
         self.render_json(msg)
 
@@ -113,7 +118,7 @@ class UserHandler(BaseRequestHandler):
                 msg = self.message("Delete Success.")
             else:
                 self.set_status(412)
-                msg = self.message("Password or name is not correct.")
+                msg = self.message("Password is not correct.")
         else:
             user.block = True
             user.save()
