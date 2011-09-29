@@ -162,7 +162,7 @@ class Loud(Base):
     query_class = LoudQuery
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id', ondelete="DELETE"))
+    user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"))
     content = Column(String(70))
     lon = Column(Float, default=0)
     lat = Column(Float, default=0)
