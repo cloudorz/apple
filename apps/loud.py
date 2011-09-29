@@ -113,7 +113,7 @@ class SearchLoudhandler(BaseRequestHandler):
                 }
 
         if field in handle_q:
-            qdict = QDict(
+            q = QDict(
                         q=condition,
                         v=value,
                         sort=self.get_argument('qs'),
