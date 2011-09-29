@@ -16,7 +16,7 @@ from tornado.web import url
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from apps.loud import LoudHandler, LoudManageHandler, SearchLoudhandler
+from apps.loud import LoudHandler, SearchLoudhandler
 from apps.user import UserHandler, AuthHandler, ResetPasswordHandler, UploadHandler, SendCodeHandler
 from utils.coredb import sql_db
 
@@ -48,7 +48,6 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
                 url(r'^/l/(?P<lid>\d+|)$', LoudHandler, name='loud'),
-                url(r'^/l/dels$', LoudManageHandler),
                 url(r'^/s/$', SearchLoudhandler),
                 url(r'^/u/(?P<phn>\d{11}|)$', UserHandler, name='user'),
                 url(r"^/reset/(?P<phn>\d{11})$", ResetPasswordHandler),
