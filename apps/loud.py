@@ -108,7 +108,8 @@ class SearchLoudhandler(BaseRequestHandler):
                         .filter(Loud.user.has(User.phone==phn))\
                         .filter(Loud.block==False)\
                         .filter(Loud.id>0),
-                'position': self.q_position,
+                'position': lambda data: Loud.query\
+                        .get_by_cycle2(*data.split(','))
                 'key': self.q_key,
                 }
 
@@ -149,10 +150,10 @@ class SearchLoudhandler(BaseRequestHandler):
 
         self.render_json(loud_collection)
 
-    def q_position(self, data):
+    def q_position(self, pos):
         lat, lon = data.split(',')
 
-        louds = Loud.query.get_by_cycle(lat, lon, st, limit, sort_str)
+        louds = Loud.query.get_by_cycle(lat, lon)
 
         return louds
 

@@ -36,11 +36,10 @@ class LoudQuery(BaseQuery):
                 :distance limit :num").params(earth_r=6378137, lat=user_lat, lon=user_lon, \
                         distance=3000, num=100)
 
-    def get_by_cycle2(self, user_lat, user_lon, st, lt, sort_str):
+    def get_by_cycle2(self, user_lat, user_lon):
         return self.from_statement("SELECT * FROM louds WHERE \
                 user_id>0 AND block=0 AND ABS(:earth_r*ACOS(SIN(:lat)*SIN(lat)*COS(:lon-lon)+COS(:lat)*COS(lat))*PI()/180) < \
-                :distance ORDER BY :sort limit :start,:num").params(earth_r=6378137, lat=user_lat, lon=user_lon, \
-                        distance=3000, start=st, num=lt, sort=sort_str)
+                :distance ").params(earth_r=6378137, lat=user_lat, lon=user_lon, distance=3000)
 
     def get_by_list(self):
         return self.filter_by(block=False).order_by('created desc').limit(1000)
