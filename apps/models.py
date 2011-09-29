@@ -162,7 +162,7 @@ class Loud(Base):
     query_class = LoudQuery
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"))
+    user_id = Column(Integer, ForeignKey('users.id', ondelete="DELETE"))
     content = Column(String(70))
     lon = Column(Float, default=0)
     lat = Column(Float, default=0)
@@ -171,7 +171,7 @@ class Loud(Base):
     block = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.datetime.now)
 
-    user = relation('User', backref=backref('louds', order_by=created), passive_deletes=True)
+    user = relation('User', backref=backref('louds', order_by=created))
 
     def __init__(self, *args, **kwargs):
         super(Loud, self).__init__(*args, **kwargs)
