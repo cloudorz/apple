@@ -171,7 +171,7 @@ class Loud(Base):
     block = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.datetime.now)
 
-    user = relation('User', backref=backref('louds', order_by=created))
+    user = relation('User', backref=backref('louds', order_by=created), passive_deletes=True)
 
     def __init__(self, *args, **kwargs):
         super(Loud, self).__init__(*args, **kwargs)
