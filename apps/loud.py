@@ -105,7 +105,7 @@ class SearchLoudhandler(BaseRequestHandler):
                 'position': lambda data: Loud.query\
                         .get_by_cycle2(*data.split(',')),
                 'key': lambda data: Loud.query\
-                        .get_by_cycley_key(*data.split(',')),
+                        .get_by_cycle_key(*data.split(',')),
                 }
 
         if field in handle_q:
