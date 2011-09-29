@@ -24,11 +24,6 @@ class LoudHandler(BaseRequestHandler):
         else:
             louds = Loud.query.get_by_cycle(self.get_argument('lat'), self.get_argument('lon'))
             
-            # FIXME
-            loud_dicts = [e.loud_to_dict() for e in louds]
-            self.render_json({'add': loud_dicts, 'del': []})
-            return
-
             shadow_loud_set = set(self.current_user.shadow)
             query_loud_set = set(e.id for e in louds)
 
@@ -105,12 +100,12 @@ class SearchLoudhandler(BaseRequestHandler):
 
         handle_q = {
                 'author': lambda phn: Loud.query\
+                        .get_louds()\
                         .filter(Loud.user.has(User.phone==phn))\
-                        .filter(Loud.block==False)\
-                        .filter(Loud.id>0),
                 'position': lambda data: Loud.query\
                         .get_by_cycle2(*data.split(',')),
-                'key': self.q_key,
+                'key': lambda data: Loud.query\
+                        .get_by_cycley_key(*data.split(',')),
                 }
 
         if field in handle_q:
@@ -149,30 +144,4 @@ class SearchLoudhandler(BaseRequestHandler):
             raise HTTPError(400)
 
         self.render_json(loud_collection)
-
-    def q_position(self, pos):
-        lat, lon = data.split(',')
-
-        louds = Loud.query.get_by_cycle(lat, lon)
-
-        return louds
-
-    def q_key(self, data):
-        lat,lon,q = data.split(',')
-
-        sort_str = self.get_argument('sortBy')
-        st = int(self.get_argument('st'))
-        limit = int(self.get_argument('pn'))
-
-        louds = Loud.query.ff(Loud.content.like('%'+q+'%')).get_by_cycle2(lat, lon, st, limit, sort_str)
-
-        res = {
-                'louds': [e.loud_to_dict() for e in louds],
-                'total': louds.count(),
-                'link': self.request.full_url(),
-                }
-
-        # TODO compute the  prev or next 
-
-        return res
 
