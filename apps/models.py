@@ -14,19 +14,23 @@ from utils.escape import json_encode, json_decode
 # TODO #2 redis cache the user's loud-id set  and token
 
 class UserQuery(BaseQuery):
+
+    def get_users(self):
+        return self.filter_by(block=False)
+
     def get_by_phone(self, phn):
         ''' Get user from users table return the User object 
         or Not exisit and Multi exisit return None
         '''
         # FIXME
-        return self.filter_by(phone=phn, block=False).first()
+        return self.get_users().filter_by(phone=phn).first()
     
     def get_by_token(self, token):
         ''' Get user from users table return the User object 
         or Not exisit and Multi exisit return None
         '''
         # FIXME
-        return self.filter_by(token=token, block=False).first()
+        return self.get_users().filter_by(token=token).first()
 
 
 class LoudQuery(BaseQuery):

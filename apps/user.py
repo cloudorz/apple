@@ -13,20 +13,58 @@ from utils.decorator import authenticated, availabelclient, admin, owner
 from utils.constants import Fail, Success
 from utils.imagepp import save_images
 from utils.sp import sms_send, ret_code2desc
-from utils.mkthings import generate_password
+from utils.mkthings import generate_password, QDict
 
 class UserHandler(BaseRequestHandler):
 
     @authenticated
     def get(self, phn):
-        user = User.query.get_by_phone(phn)
+        if phn:
+            user = User.query.get_by_phone(phn)
 
-        if user:
-            info = user.user_to_dict(self.current_user)
-            self.render_json(info)
+            if user:
+                info = user.user_to_dict(self.current_user)
+                self.render_json(info)
+            else:
+                self.set_status(404)
+                self.render_json(self.message("The user is not exsited."))
         else:
-            self.set_status(404)
-            self.render_json(self.message("The user is not exsited."))
+            q = QDict(
+                    q=self.get_argument('q', ""),
+                    sort=self.get_argument('qs'),
+                    start=int(self.get_argument('st')),
+                    num=int(self.get_argument('qn')),
+                    )
+
+            query_users = User.query.get_users()
+
+            if q.q:
+                query_users = query_users.filter(User.name.like('%'+q.q+'%'))
+
+            # composite the results collection
+            total = query_users.count()
+            query_dict = {
+                    'q': q.q,
+                    'qs': q.sort,
+                    'st': q.start,
+                    'qn': q.num,
+                    }
+
+            user_collection = {
+                    'users': [e.user_to_dict(self.current_user) for e in query_users.order_by(q.sort).limit(q.num).offset(q.start)],
+                    'total': total,
+                    'link': self.full_uri(query_dict),
+                    }
+
+            if q.start + q.num < total:
+                query_dict['st'] = q.start + q.num
+                user_collection['next'] = self.full_uri(query_dict)
+
+            if q.start > 0:
+                query_dict['st'] = max(q.start - q.num, 0)
+                user_collection['prev'] = self.full_uri(query_dict)
+
+            return self.render_json(user_collection)
 
     @availabelclient
     def post(self, phn):
