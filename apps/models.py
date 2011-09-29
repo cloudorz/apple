@@ -54,7 +54,7 @@ class LoudQuery(BaseQuery):
         return self.get_by_cycle2(user_lat, user_lon).filter(Loud.content.like('%'+key+'%'))
 
     def get_louds(self):
-        return self.filter(Loud.block==False).filter(Loud.id>0)
+        return self.filter(Loud.block==False).filter(Loud.user_id>0)
 
 
 class User(Base):
