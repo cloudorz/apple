@@ -101,7 +101,7 @@ class SearchLoudhandler(BaseRequestHandler):
         handle_q = {
                 'author': lambda phn: Loud.query\
                         .get_louds()\
-                        .filter(Loud.user.has(User.phone==phn))\
+                        .filter(Loud.user.has(User.phone==phn)),
                 'position': lambda data: Loud.query\
                         .get_by_cycle2(*data.split(',')),
                 'key': lambda data: Loud.query\
