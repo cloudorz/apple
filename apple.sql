@@ -28,8 +28,8 @@ CREATE TABLE louds (
     user_id INT UNSIGNED NOT NULL REFERENCES users(id),
     content VARCHAR(70) NOT NULL,
     address VARCHAR(30) NULL,
-    lon DOUBLE NOT NULL,
     lat DOUBLE NOT NULL,
+    lon DOUBLE NOT NULL,
     grade SMALLINT(2) NOT NULL DEFAULT 5,
     block TINYINT(1) NOT NULL DEFAULT 0,
     created DATETIME NOT NULL

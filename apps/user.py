@@ -106,13 +106,20 @@ class UserHandler(BaseRequestHandler):
         # PS: delete all relation data user_id = 0
 
         if user.owner_by(self.current_user):
-            self.db.delete(user) 
-            self.db.commit()
+            pw = self.get_argument('pw')
+            if user.authenticate(pw):
+                self.db.delete(user) 
+                self.db.commit()
+                msg = self.message("Delete Success.")
+            else:
+                self.set_status(412)
+                msg = self.message("Password or name is not correct.")
         else:
             user.block = True
             user.save()
+            msg = self.message("Block Success.")
         
-        self.render_json(self.message("Delete Success."))
+        self.render_json(msg)
 
     def get_recipient(self, phn):
         return User.query.get_by_phone(phn)
@@ -144,19 +151,6 @@ class AuthHandler(BaseRequestHandler):
 
 
 class PasswordHandler(BaseRequestHandler):
-
-    @authenticated
-    @admin('phn', 'user')
-    def get(self, user):
-        pw = self.get_argument('pw')
-
-        if user.authenticate(pw):
-            msg = self.message("valid password for %s" % user.phone)
-        else:
-            self.set_status(406)
-            msg = self.message("Password or name is not correct.")
-
-        self.render_json(msg)
 
     @availabelclient
     def post(self, phn):
