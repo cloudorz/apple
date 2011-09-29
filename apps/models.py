@@ -37,12 +37,26 @@ class LoudQuery(BaseQuery):
                         distance=3000, num=100)
 
     def get_by_cycle2(self, user_lat, user_lon):
-        return self.from_statement("SELECT * FROM louds WHERE \
-                user_id>0 AND block=0 AND ABS(:earth_r*ACOS(SIN(:lat)*SIN(lat)*COS(:lon-lon)+COS(:lat)*COS(lat))*PI()/180) < \
-                :distance ").params(earth_r=6378137, lat=user_lat, lon=user_lon, distance=3000)
+        #return self.from_statement("SELECT * FROM louds WHERE \
+                #        user_id>0 AND block=0 AND ABS(:earth_r*ACOS(SIN(:lat)*SIN(lat)*COS(:lon-lon)+COS(:lat)*COS(lat))*PI()/180) < \
+                #:distance ").params(earth_r=6378137, lat=user_lat, lon=user_lon, distance=3000)
+        earth_r = 6378137
+        distance = 3000
+
+        # mysql functions 
+        acos = sql.func.acos
+        sin = sql.func.sin
+        cos = sql.func.cos
+        pi = sql.func.pi
+        abs = sql.func.abs
+
+        return self.filter(abs(earth_r*acos(sin(user_lat)*sin(Loud.lat)*cos(user_lon-Loud.lon)+cos(user_lat)*cos(Loud.lat))*pi()/180) < distance)
+
+    def get_by_cycley_key(self, user_lat, user_lon, key):
+        return self.get_by_cycle2(user_lat, user_lon).filter(Loud.content.like('%'+key+'%'))
 
     def get_louds(self):
-        return self.filter_by(block=False).filter(Loud.id>0)
+        return self.filter(Loud.block=False).filter(Loud.id>0)
 
 
 class User(Base):
