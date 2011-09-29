@@ -109,7 +109,7 @@ class SearchLoudhandler(BaseRequestHandler):
                         .filter(Loud.block==False)\
                         .filter(Loud.id>0),
                 'position': lambda data: Loud.query\
-                        .get_by_cycle2(*data.split(','))
+                        .get_by_cycle2(*data.split(',')),
                 'key': self.q_key,
                 }
 
