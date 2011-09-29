@@ -120,7 +120,7 @@ class SearchLoudhandler(BaseRequestHandler):
                         start=int(self.get_argument('st')),
                         num=int(self.get_argument('qn')),
                     )
-            query_louds = handle_q[field](qdict.v)
+            query_louds = handle_q[field](q.v)
 
             # composite the results collection
             total = query_louds.count()
