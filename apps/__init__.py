@@ -73,4 +73,5 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         return {'msg': msg}
 
     def full_uri(self, query_dict=None):
-        return url_unescape(url_concat("%s%s" % (options.site_uri, self.request.path), query_dict))
+        #return url_unescape(url_concat("%s%s" % (options.site_uri, self.request.path), query_dict))
+        return url_concat("%s%s" % (options.site_uri, self.request.path), query_dict)
