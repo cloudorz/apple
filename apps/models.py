@@ -172,6 +172,10 @@ class Loud(Base):
     block = Column(Boolean, default=False)
     created = Column(DateTime, default=datetime.datetime.now)
 
+    # on delete CASCADE make me a lots to fix it. 
+    # use this feature you must do two things:
+    # 1) Column ForeignKey set ondelete keyword for database level 
+    # 2) mapper on relation set cascade keyword in parent Model for sqlalchemy session level 
     user = relation('User', backref=backref('louds', order_by=created,  cascade="all, delete, delete-orphan"))
 
     def __init__(self, *args, **kwargs):
