@@ -74,6 +74,8 @@ class User(Base):
     updated = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     created = Column(DateTime, default=datetime.datetime.now)
 
+    louds = relation('Loud', backref=backref("user"), cascade="all, delete, delete-orphan")
+
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
 
