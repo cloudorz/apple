@@ -45,7 +45,7 @@ class LoudQuery(BaseQuery):
 
         # ignore user's small movement lat: 55.66m, lon: 54.93m
         user_lat = decimal.Decimal(user_lat).quantize(decimal.Decimal('0.0001'))
-        user_lat = decimal.Decimal(user_lon).quantize(decimal.Decimal('0.0001'))
+        user_lon = decimal.Decimal(user_lon).quantize(decimal.Decimal('0.0001'))
 
         # mysql functions 
         acos, sin, cos, pi, abs = sql.func.acos, sql.func.sin, sql.func.cos, sql.func.pi, sql.func.abs
