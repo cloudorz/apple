@@ -143,7 +143,7 @@ class SearchLoudhandler(BaseRequestHandler):
     def compute_etag(self):
 
         hasher = hashlib.sha1()
-        if 'cur_louds' in self:
+        if 'cur_louds' in self.__dict__:
             any(her.update(e) for e in sorted(loud['id'] for loud in self.cur_louds))
 
         return '"%s"' % hasher.hexdigest()
