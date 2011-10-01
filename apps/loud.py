@@ -14,32 +14,14 @@ class LoudHandler(BaseRequestHandler):
 
     @authenticated
     def get(self, lid):
-        if lid:
-            loud = Loud.query.get_by_key(lid)
+        loud = Loud.query.get_by_key(lid)
 
-            if loud:
-                loud_dict = loud.loud_to_dict()
-                self.render_json(loud_dict)
-            else:
-                self.set_status(404)
-                self.render_json(self.message("the loud is not exsited"))
+        if loud:
+            loud_dict = loud.loud_to_dict()
+            self.render_json(loud_dict)
         else:
-            louds = Loud.query.get_by_cycle(self.get_argument('lat'), self.get_argument('lon'))
-            
-            shadow_loud_set = set(self.current_user.shadow)
-            query_loud_set = set(e.id for e in louds)
-
-            loud_add_set = query_loud_set - shadow_loud_set
-            loud_del_set = shadow_loud_set - query_loud_set
-
-            # save the new shadow
-            self.current_user.shadow = list(query_loud_set)
-            self.current_user.save()
-
-            # the new loud
-            loud_dicts = [e.loud_to_dict() for e in louds if e.id in loud_add_set]
-
-            self.render_json({'add': loud_dicts, 'del': list(loud_del_set)})
+            self.set_status(404)
+            self.render_json(self.message("the loud is not exsited"))
 
     @authenticated
     def post(self, lid):

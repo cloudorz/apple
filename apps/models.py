@@ -176,6 +176,7 @@ class Loud(Base):
     address = Column(String(30), nullable=True)
     grade = Column(Integer, default=5)
     block = Column(Boolean, default=False)
+    updated = Column(DateTime, onupdate=datetime.datetime.now)
     created = Column(DateTime, default=datetime.datetime.now)
 
     # on delete CASCADE make me a lots to fix it. 
