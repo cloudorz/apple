@@ -1,6 +1,6 @@
 # coding: utf-8
 
-import datetime, hashlib
+import datetime, hashlib, decimal
 
 from sqlalchemy import sql, Column, String, Integer, Boolean, DateTime, Float, ForeignKey
 from sqlalchemy.orm import relation, backref, column_property, synonym
