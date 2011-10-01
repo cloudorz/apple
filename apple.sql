@@ -36,7 +36,7 @@ CREATE TABLE `louds` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `louds_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=98 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -56,14 +56,13 @@ CREATE TABLE `users` (
   `last_lon` double NOT NULL DEFAULT '0',
   `last_lat` double NOT NULL DEFAULT '0',
   `radius` float DEFAULT NULL,
-  `shadow` varchar(2048) DEFAULT NULL,
   `is_admin` tinyint(1) NOT NULL DEFAULT '0',
   `block` tinyint(1) NOT NULL DEFAULT '0',
   `updated` datetime NOT NULL,
   `created` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `phone` (`phone`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

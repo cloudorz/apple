@@ -74,7 +74,6 @@ class User(Base):
     last_lat = Column(Float, default=0)
     last_lon = Column(Float, default=0)
     radius = Column(Float, nullable=True, default=2.5)
-    _shadow = Column("shadow", String(2048), nullable=True)
     is_admin = Column(Boolean, default=False)
     block = Column(Boolean, default=False)
     updated = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
@@ -97,17 +96,6 @@ class User(Base):
         self._password = hashlib.md5(password).hexdigest()
     
     password = synonym("_password", descriptor=property(_get_password, _set_password))
-
-    def _get_shadow(self):
-        if self._shadow:
-            return json_decode(self._shadow)
-
-        return []
-
-    def _set_shadow(self, data):
-        self._shadow = json_encode(data)
-
-    shadow = synonym("_shadow", descriptor=property(_get_shadow, _set_shadow))
 
     def can_save(self):
         return self.phone and self.password and self.name 
