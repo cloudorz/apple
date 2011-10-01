@@ -1,5 +1,7 @@
 # coding: utf-8
 
+import hashlib
+
 from tornado.web import HTTPError
 
 from apps import BaseRequestHandler
