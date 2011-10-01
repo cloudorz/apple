@@ -130,8 +130,19 @@ class SearchLoudhandler(BaseRequestHandler):
             if q.start > 0:
                 query_dict['st'] = max(q.start - q.num, 0)
                 loud_collection['prev'] = self.full_uri(query_dict)
+
+            # make etag prepare
+            self.cur_louds = loud_collection['louds']
         else:
             raise HTTPError(400)
 
         self.render_json(loud_collection)
+    
+    def compute_etag(self):
+
+        hasher = hashlib.sha1()
+        if 'cur_louds' in self:
+            any(her.update(e) for e in sorted(loud['id'] for loud in self.cur_louds))
+
+        return '"%s"' % hasher.hexdigest()
 
