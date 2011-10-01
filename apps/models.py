@@ -39,7 +39,13 @@ class LoudQuery(BaseQuery):
         return self.filter(Loud.block==False).filter(Loud.user_id>0)
 
     def get_by_cycle2(self, user_lat, user_lon):
+
+        # geo args
         earth_r, distance = options.er, options.cr
+
+        # ignore user's small movement lat: 55.66m, lon: 54.93m
+        user_lat = decimal.Decimal(user_lat).quantize(decimal.Decimal('0.0001'))
+        user_lat = decimal.Decimal(user_lon).quantize(decimal.Decimal('0.0001'))
 
         # mysql functions 
         acos, sin, cos, pi, abs = sql.func.acos, sql.func.sin, sql.func.cos, sql.func.pi, sql.func.abs
