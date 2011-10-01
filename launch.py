@@ -47,13 +47,13 @@ define("app_secret", default="jkafldjaklfjda978-=-^**&", help="app secret")
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
+                url(r'^/s$', SearchLoudhandler),
                 url(r'^/l/(?P<lid>\d+|)$', LoudHandler, name='loud'),
-                url(r'^/s/$', SearchLoudhandler),
-                url(r'^/u/(?P<phn>\d{11}|)$', UserHandler, name='user'),
-                url(r"^/reset/(?P<phn>\d{11})$", ResetPasswordHandler),
                 url(r"^/auth$", AuthHandler),
-                url(r"^/code$", SendCodeHandler),
+                url(r'^/u/(?P<phn>\d{11}|)$', UserHandler, name='user'),
                 url(r"^/upload$", UploadHandler),
+                url(r"^/code$", SendCodeHandler),
+                url(r"^/reset/(?P<phn>\d{11})$", ResetPasswordHandler),
                 ]
         settings = dict(
                 static_path=os.path.join(os.path.dirname(__file__), 'static'),
