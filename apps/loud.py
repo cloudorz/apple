@@ -83,6 +83,7 @@ class LoudHandler(BaseRequestHandler):
 
 class SearchLoudhandler(BaseRequestHandler):
 
+    @authenticated
     def get(self):
         condition = self.get_argument('q')
         if ':' in condition:
