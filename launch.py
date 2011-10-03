@@ -29,13 +29,13 @@ define('static_uri', default="http://static.whohelp.me", type=str, help="static 
 
 #args
 define('er', default=6378137, type=float, help="the earth radius.")
-define('cr', default=2500, type=float, help="the cycle radius.")
+define('cr', default=3000, type=float, help="the cycle radius.")
 
 # database
 define('db_uri', default="mysql://root:123@localhost/apple?charset=utf8", type=str, help="connect to mysql")
 
 # avatar dir  path
-define('path', default="/data/web/static/i/", type=str, help="recommend default one")
+define('path', default="/data/web/static/", type=str, help="recommend default one")
 
 # app key
 define("app_name", default="apple", help="app name")

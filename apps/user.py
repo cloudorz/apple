@@ -71,8 +71,9 @@ class UserHandler(BaseRequestHandler):
         user = User()
 
         data = self.get_data()
-        data['avatar'] = 'i/%s.jpg' % data['phone'] 
         user.from_dict(data)
+        # after the phone set in
+        user.generate_avatar_path()
 
         if user.save():
             self.set_status(201)
@@ -180,8 +181,11 @@ class UploadHandler(BaseRequestHandler):
     @availabelclient
     def post(self):
         if 'photo' in self.request.files:
-            save_images(self.request.files['photo'])
-            msg = self.message("Upload Success.")
+            if save_images(self.request.files['photo']):
+                msg = self.message("Upload Success.")
+            else:
+                self.set_status(501)
+                msg = self.message("save photo fail.")
         else:
             self.set_status(400)
             msg = self.message("photo field is requierd.")

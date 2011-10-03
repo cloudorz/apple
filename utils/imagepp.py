@@ -1,12 +1,13 @@
 # coding: utf-8
 
-import os.path
+import os.path, hashlib
 from tornado.options import options
 
 def save_images(http_files):
 
     for http_file in http_files:
-        file_path = os.path.join(options.path, http_file['filename'])
+        name, ext = http_file['filename'].rsplit('.')
+        file_path = os.path.join(options.path, "i/%s.%s" % (hashlib.md5(name).hexdigest(), ext))
         with open(file_path, 'wb') as f:
             f.write(http_file['body'])
 

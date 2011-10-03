@@ -150,6 +150,10 @@ class User(Base):
     def get_avatar_link(self):
         return "%s/%s" % (options.static_uri, self.avatar)
 
+    def generate_avatar_path(self):
+        if self.phone:
+            self.avatar = 'i/%s.jpg' % hashlib.md5(str(self.phone)).hexdigest()
+
 
 class Loud(Base):
     __tablename__ = 'louds'
