@@ -200,7 +200,6 @@ class Loud(Base):
         loud_dict['user'] = self.user.user_to_dict_by_other()
         
         loud_dict['id'] = self.get_urn_id()
-        loud_dict['lid'] = self.id # FIXME let me out here
         loud_dict['link'] = self.get_link()
 
         return loud_dict
