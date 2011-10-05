@@ -23,14 +23,36 @@ class UserQuery(BaseQuery):
         or Not exisit and Multi exisit return None
         '''
         # FIXME
-        return self.get_users().filter_by(phone=phn).first()
+        try:
+            u = self.get_users().filter_by(phone=phn).one()
+            self.session.commit()
+        except (NoResultFound, MultipleResultsFound):
+            u = None
+        except:
+            u = None
+            self.session.rollback()
+        finally:
+           self.session.remove() 
+        #return self.get_users().filter_by(phone=phn).first()
+        return u
     
     def get_by_token(self, token):
         ''' Get user from users table return the User object 
         or Not exisit and Multi exisit return None
         '''
         # FIXME
-        return self.get_users().filter_by(token=token).first()
+        try:
+            u = self.get_users().filter_by(token=token).one()
+            self.session.commit()
+        except (NoResultFound, MultipleResultsFound):
+            u = None
+        except:
+            u = None
+            self.session.rollback()
+        finally:
+           self.session.remove() 
+        #return self.get_users().filter_by(token=token).first()
+        return u
 
 
 class LoudQuery(BaseQuery):
