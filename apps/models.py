@@ -31,8 +31,7 @@ class UserQuery(BaseQuery):
         except:
             u = None
             self.session.rollback()
-        finally:
-           self.session.remove() 
+
         #return self.get_users().filter_by(phone=phn).first()
         return u
     
@@ -49,8 +48,7 @@ class UserQuery(BaseQuery):
         except:
             u = None
             self.session.rollback()
-        finally:
-           self.session.remove() 
+
         #return self.get_users().filter_by(token=token).first()
         return u
 
