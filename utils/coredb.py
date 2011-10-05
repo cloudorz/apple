@@ -70,8 +70,13 @@ def obj_from_dict(self, data):
 
 def obj_save(self):
     if self.can_save():
-        if not self.id: self.db.add(self)
-        self.db.commit()
+        try:
+            not self.id and self.db.add(self)
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise
+
         return True
 
 def fake_get_urn_id(self):

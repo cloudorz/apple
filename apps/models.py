@@ -29,8 +29,8 @@ class UserQuery(BaseQuery):
         except (NoResultFound, MultipleResultsFound):
             u = None
         except:
-            u = None
             self.session.rollback()
+            raise
 
         #return self.get_users().filter_by(phone=phn).first()
         return u
@@ -46,8 +46,8 @@ class UserQuery(BaseQuery):
         except (NoResultFound, MultipleResultsFound):
             u = None
         except:
-            u = None
             self.session.rollback()
+            raise
 
         #return self.get_users().filter_by(token=token).first()
         return u
