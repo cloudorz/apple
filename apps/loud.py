@@ -27,7 +27,7 @@ class LoudHandler(BaseRequestHandler):
     def post(self, lid):
 
         # the precondtion the max 3 louds.
-        loud_count = Loud.query.get_louds().filter(Loud.user==self.current_user)).count()
+        loud_count = Loud.query.get_louds().filter(Loud.user==self.current_user).count()
         if loud_count > 3:
             raise HTTPError(412)
 
