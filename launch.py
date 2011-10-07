@@ -47,7 +47,7 @@ define("app_secret", default="jkafldjaklfjda978-=-^**&", help="app secret")
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-                url(r'^/new$', UpdatedLoudHandler),
+                url(r'^/update$', UpdatedLoudHandler),
                 url(r'^/s$', SearchLoudHandler),
                 url(r'^/l/(?P<lid>\d+|)$', LoudHandler, name='loud'),
                 url(r"^/auth$", AuthHandler),
