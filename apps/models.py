@@ -59,7 +59,7 @@ class LoudQuery(BaseQuery):
         return self.filter(Loud.block==False).filter(Loud.user_id>0)
 
     def get_by_cycle2(self, user_lat, user_lon):
-        return self.get_by_cycle(user_lat, user_lon).filter(Loud.block=False)
+        return self.get_by_cycle(user_lat, user_lon).filter(Loud.block==False)
 
     def cycle_update(self, user_lat, user_lon, updated):
         return self.get_by_cycle(user_lat, user_lon).filter(Loud.updated>=updated)
