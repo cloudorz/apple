@@ -16,7 +16,7 @@ from tornado.web import url
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from apps.loud import LoudHandler, SearchLoudhandler, UpdatedLoudHandler
+from apps.loud import LoudHandler, SearchLoudHandler, UpdatedLoudHandler
 from apps.user import UserHandler, AuthHandler, ResetPasswordHandler, UploadHandler, SendCodeHandler
 from utils.coredb import sql_db
 
