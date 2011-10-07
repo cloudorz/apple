@@ -76,10 +76,7 @@ def main():
     sql_db.init_app(app)
 
     # server 
-    http_server = tornado.httpserver.HTTPServer(app, ssl_options={
-        'certfile': os.path.join('secure', 'apple.crt'),
-        'keyfile': os.path.join('secure', 'apple.key'),
-        }, xheaders=True)
+    http_server = tornado.httpserver.HTTPServer(app, xheaders=True)
     http_server.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
 
