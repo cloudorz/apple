@@ -99,6 +99,9 @@ class SearchLoudHandler(BaseRequestHandler):
                     )
             query_louds = handle_q[field](q.v)
 
+            gmt_now = datetime.datetime.now() - datetime.timedelta(hours=8)
+            self.set_header('Last-Modified', gmt_now.strftime('%a, %d %b %Y %H:%M:%S GMT'))
+
             # composite the results collection
             total = query_louds.count()
             query_dict = {
@@ -146,9 +149,6 @@ class UpdatedLoudHandler(BaseRequestHandler):
         lon = self.get_argument('lon')
         last_time = self.last_modified_time()
         new_loud_count = Loud.query.cycle_update(lat, lon, last_time).count()
-
-        gmt_now = datetime.datetime.now() - datetime.timedelta(hours=8)
-        self.set_header('Last-Modified', gmt_now.strftime('%a, %d %b %Y %H:%M:%S GMT'))
 
         self.render_json({'count': new_loud_count})
 
