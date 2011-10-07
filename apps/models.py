@@ -59,6 +59,12 @@ class LoudQuery(BaseQuery):
         return self.filter(Loud.block==False).filter(Loud.user_id>0)
 
     def get_by_cycle2(self, user_lat, user_lon):
+        return self.get_by_cycle(user_lat, user_lon).filter(Loud.block=False)
+
+    def cycle_update(self, user_lat, user_lon, updated):
+        return self.get_by_cycle(user_lat, user_lon).filter(Loud.updated>=updated)
+
+    def get_by_cycle(self, user_lat, user_lon):
 
         # geo args
         earth_r, distance = options.er, options.cr
@@ -70,11 +76,7 @@ class LoudQuery(BaseQuery):
         # mysql functions 
         acos, sin, cos, pi, abs = sql.func.acos, sql.func.sin, sql.func.cos, sql.func.pi, sql.func.abs
 
-        return self.get_louds()\
-                   .filter(abs(earth_r*acos(sin(user_lat)*sin(Loud.lat)*cos(user_lon-Loud.lon)+cos(user_lat)*cos(Loud.lat))*pi()/180)<distance)
-
-    def get_by_cycle(self, user_lat, user_lon):
-        return self.get_by_cycle2(user_lat, user_lon).limit(100)
+        return self.filter(abs(earth_r*acos(sin(user_lat)*sin(Loud.lat)*cos(user_lon-Loud.lon)+cos(user_lat)*cos(Loud.lat))*pi()/180)<distance)
 
     def get_by_cycle_key(self, user_lat, user_lon, key):
         return self.get_by_cycle2(user_lat, user_lon).filter(Loud.content.like('%'+key+'%'))

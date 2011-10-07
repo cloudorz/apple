@@ -1,6 +1,6 @@
 # coding: utf-8
 
-import hashlib
+import hashlib, datetime
 
 from tornado.web import HTTPError
 
@@ -69,7 +69,7 @@ class LoudHandler(BaseRequestHandler):
         return Loud.query.get_by_key(lid)
 
 
-class SearchLoudhandler(BaseRequestHandler):
+class SearchLoudHandler(BaseRequestHandler):
 
     @authenticated
     def get(self):
@@ -137,3 +137,26 @@ class SearchLoudhandler(BaseRequestHandler):
 
         return '"%s"' % hasher.hexdigest()
 
+class UpdatedLoudHandler(BaseRequestHandler):
+
+    @authenticated
+    def get(self):
+        
+        lat = self.get_argument('lat')
+        lon = self.get_argument('lon')
+        last_time = self.last_modified_time()
+        new_loud_count = Loud.query.cycle_update(lat, lon, last_time).count()
+
+        gmt_now = datetime.datetime.now() - datetime.timedelta(hours=8)
+        self.set_header('Last-Modified', gmt_now.strftime('%a, %d %b %Y %H:%M:%S GMT'))
+
+        self.render_json({'count': new_loud_count})
+
+    def last_modified_time(self):
+        ims = self.request.headers.get('If-Modified-Since', None)
+        ims_time = datetime.datetime(1970,1,1,0,0)
+
+        if ims:
+            ims_time = datetime.datetime.strptime(ims, '%a, %d %b %Y %H:%M:%S %Z') + datetime.timedelta(hours=8)
+
+        return ims_time
