@@ -147,11 +147,11 @@ class UpdatedLoudHandler(BaseRequestHandler):
         
         lat = self.get_argument('lat')
         lon = self.get_argument('lon')
-        last_time = self.last_modified_time()
-        new_loud_count = Loud.query.cycle_update(lat, lon, last_time).count()
+        new_loud_count = Loud.query.cycle_update(lat, lon, self.last_modified_time).count()
 
         self.render_json({'count': new_loud_count})
 
+    @property
     def last_modified_time(self):
         ims = self.request.headers.get('If-Modified-Since', None)
         ims_time = datetime.datetime(1970,1,1,0,0)
