@@ -38,9 +38,9 @@ define('db_uri', default="mysql://root:123@localhost/apple?charset=utf8", type=s
 define('path', default="/data/web/static/", type=str, help="recommend default one")
 
 # app key
-define("app_name", default="apple", help="app name")
-define("app_key", default="12345678", help="app key")
-define("app_secret", default="jkafldjaklfjda978-=-^**&", help="app secret")
+define("app_name", default="lebang", help="app name")
+define("app_key", default="20111007001", help="app key")
+define("app_secret", default="9e6306f58b705e44d585d61e500d884d", help="app secret")
 
 
 # main logic
