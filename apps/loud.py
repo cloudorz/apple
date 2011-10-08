@@ -149,6 +149,9 @@ class UpdatedLoudHandler(BaseRequestHandler):
         lon = self.get_argument('lon')
         new_loud_count = Loud.query.cycle_update(lat, lon, self.last_modified_time).count()
 
+        if new_loud_count <= 0:
+            raise HTTPError(304)
+
         self.render_json({'count': new_loud_count})
 
     @property
