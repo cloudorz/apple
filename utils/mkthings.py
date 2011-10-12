@@ -12,3 +12,15 @@ class QDict(dict):
             return self[name]
         except KeyError:
             raise AttributeError(name)
+
+# singleton decorator
+
+ def singleton(aClass):
+    instance = []
+
+    def onCall(*args, **kwargs):
+        if not instance:
+            instance[0] = aClass(*args, **kwargs)
+        return instance[0]
+
+    return onCall
