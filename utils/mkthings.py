@@ -15,7 +15,7 @@ class QDict(dict):
 
 # singleton decorator
 
- def singleton(aClass):
+def singleton(aClass):
     instance = []
 
     def onCall(*args, **kwargs):
