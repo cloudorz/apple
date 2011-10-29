@@ -41,6 +41,7 @@ define('path', default="/data/web/static/", type=str, help="recommend default on
 define("app_name", default="lebang", help="app name")
 define("app_key", default="20111007001", help="app key")
 define("app_secret", default="9e6306f58b705e44d585d61e500d884d", help="app secret")
+define("token_secret", default="bc400ed500605c49a035eead0ee5ef41", help="token secret")
 
 
 # main logic
