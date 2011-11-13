@@ -141,8 +141,9 @@ class User(Base):
         return info
 
     def user_to_dict_by_other(self):
-        #  (id, link, phone, name, avatar, last_lon, last_lat, updated)
-        info = self.to_dict(include=['phone', 'name', 'avatar', 'last_lat', 'last_lon', 'updated'])
+        #  (id, link, phone, name, avatar, last_lon, last_lat, updated, is_admin)
+        info = self.to_dict(include=['phone', 'name', 'avatar', 'last_lat', 'last_lon', 'updated',
+            'is_admin'])
         info['id'] = self.get_urn_id()
         info['link'] = self.get_link()
         info['avatar_link'] = self.get_avatar_link()
