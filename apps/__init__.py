@@ -10,6 +10,7 @@ from tornado.httputil import url_concat
 from tornado.escape import url_unescape
 
 from utils.escape import json_encode, json_decode
+from utils.mkthings import QDict
 from apps.models import User
 
 class BaseRequestHandler(tornado.web.RequestHandler):
@@ -18,6 +19,10 @@ class BaseRequestHandler(tornado.web.RequestHandler):
     @property
     def db(self):
         return self.application.db_session
+
+    @property
+    def redis(self):
+        return self.application.redis
 
     # json pickle data methods
     def json(self, data):
@@ -59,9 +64,17 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 
     def get_current_user(self):
         tk = self.get_argument('tk')
+        hash_key = 'users:%s' % tk
 
         if self.is_available_client():
-            return User.query.get_by_token(tk)
+            user_dict = self.redis.hgetall(hash_key)
+
+            if not user_dict:
+                user = User.query.get_by_token(tk)
+                if user:
+                    user_dict = {'id':user.id, 'phone':user.phone, 'is_admin':user.is_admin, 'name':user.name}
+                    self.redis.hmset(hash_key, user_dict)
+            return QDict(user_dict)
 
         return None
 
