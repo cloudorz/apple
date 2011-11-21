@@ -67,13 +67,14 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         key = 'users:%s' % tk
 
         if self.is_available_client():
-            user_dict = json_decode(self.rdb.get(key))
+            user_str = self.rdb.get(key)
+            user_dict = user_str and json_decode(user_str)
             if not user_dict:
                 user = User.query.get_by_token(tk)
                 if user:
-                    self.rdb.set(key, json_encode(user.user2dict4redis()))
+                    user_dict = user.user2dict4redis()
+                    self.rdb.set(key, json_encode(user_dict))
                     self.rdb.expire(key, 3600)
-                    user_dict = json_decode(self.rdb.get(key))
 
             if user_dict:
                 return QDict(user_dict)
