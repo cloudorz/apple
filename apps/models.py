@@ -210,7 +210,7 @@ class Loud(Base):
         return "<loud:%s>" % self.id
 
     def can_save(self):
-        return self.user and self.content and self.lat and self.lon
+        return self.user_id and self.content and self.lat and self.lon
 
     def owner_by(self, u):
         return u and u.id == self.user_id

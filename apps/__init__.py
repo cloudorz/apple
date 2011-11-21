@@ -3,6 +3,7 @@
 import httplib, datetime
 
 import tornado.web
+import ooredis
 
 from tornado.web import HTTPError
 from tornado.options import options
@@ -59,9 +60,17 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 
     def get_current_user(self):
         tk = self.get_argument('tk')
+        key = 'users:%s' % tk
 
         if self.is_available_client():
-            return User.query.get_by_token(tk)
+            user_dict = ooredis.Dict(key)
+            if not user_dict:
+                user = User.query.get_by_token(tk)
+                if user:
+                    user_dict.update({'name':user.name, 'phone':user.phone, 'id':user.id,
+                        'is_admin':user.is_admin})
+            if user_dict:
+                return QDict(dict(user_dict))
 
         return None
 

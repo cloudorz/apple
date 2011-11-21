@@ -34,7 +34,7 @@ class LoudHandler(BaseRequestHandler):
         data = self.get_data()
 
         loud = Loud()
-        loud.user = self.current_user
+        loud.user_id = self.current_user.id
 
         if self.current_user.is_admin:
             # admin's loud
@@ -51,9 +51,9 @@ class LoudHandler(BaseRequestHandler):
             msg = self.message("content,lat,lon,address fields are required.")
 
         # addtional operation add the position
-        self.current_user.last_lat = data['lat']
-        self.current_user.last_lon = data['lon']
-        self.current_user.save()
+        #self.current_user.last_lat = data['lat']
+        #self.current_user.last_lon = data['lon']
+        #self.current_user.save()
 
         self.render_json(msg)
 
