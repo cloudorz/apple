@@ -67,6 +67,8 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         key = 'users:%s' % tk
 
         if self.is_available_client():
+            return User.query.get_by_token(tk)
+            # FIXME
             user_str = self.rdb.get(key)
             user_dict = user_str and json_decode(user_str)
             if not user_dict:

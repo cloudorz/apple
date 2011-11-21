@@ -59,9 +59,7 @@ def obj_to_dict(self, include=[]):
     '''
     #exclude.append('_sa_instance_state')
 
-    vars_dict = vars(self).copy()
-
-    return {k:v for k,v in vars_dict.items() if k in include}
+    return {k:v for k,v in vars(self).items() if k in include}
 
 def obj_from_dict(self, data):
     # PS: not contain the user and not method name
