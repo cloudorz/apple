@@ -11,6 +11,7 @@ from tornado.httputil import url_concat
 from tornado.escape import url_unescape
 
 from utils.escape import json_encode, json_decode
+from utils.mkthings import QDict
 from apps.models import User
 
 class BaseRequestHandler(tornado.web.RequestHandler):
