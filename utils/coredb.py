@@ -58,15 +58,13 @@ def obj_to_dict(self, include=[]):
     not contain the relating objects
     '''
     #exclude.append('_sa_instance_state')
-    dict_obj = vars(self).copy()
-    [dict_obj.pop(e) for e in dict_obj.keys() if e not in include]
-       
-    return dict_obj
+
+    return {k:v for k,v in vars(self).items() if k not in include}
 
 def obj_from_dict(self, data):
     # PS: not contain the user and not method name
     attrs = [e for e in dir(self) if not e.startswith('_') and not callable(getattr(self, e))]
-    [setattr(self, e, data[e]) for e in data.keys() if e in attrs]
+    any(setattr(self, k, v) for k,v in data.items() if k in attrs)
 
 def obj_save(self):
     if self.can_save():
