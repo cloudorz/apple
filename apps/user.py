@@ -16,6 +16,7 @@ from utils.constants import Fail, Success
 from utils.imagepp import save_images
 from utils.sp import sms_send, ret_code2desc
 from utils.mkthings import generate_password, QDict
+from utils.escape import json_encode, json_decode
 
 class UserHandler(BaseRequestHandler):
 
@@ -145,9 +146,8 @@ class AuthHandler(BaseRequestHandler):
                     options.token_secret)).hex
 
                 info = user.user_to_dict_by_auth() # must before save
-                user_dict = ooredis.Dict('users:%s' % user.token)
-                user_dict.update(user.user2dict4redis())
-                #user_dict.expire(3600)
+                self.rdb.set('users:%s' % user.token, json_encode(user.user2dict4redis()))
+                self.rdb.expire(3600)
 
                 user.save()
 

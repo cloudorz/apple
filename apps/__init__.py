@@ -3,7 +3,6 @@
 import httplib, datetime
 
 import tornado.web
-import ooredis
 
 from tornado.web import HTTPError
 from tornado.options import options
@@ -20,6 +19,10 @@ class BaseRequestHandler(tornado.web.RequestHandler):
     @property
     def db(self):
         return self.application.db_session
+
+    @property
+    def rdb(self):
+        return self.application.redis
 
     # json pickle data methods
     def json(self, data):
@@ -64,15 +67,16 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         key = 'users:%s' % tk
 
         if self.is_available_client():
-            user_dict = ooredis.Dict(key)
+            user_dict = self.rdb.get(key)
             if not user_dict:
                 user = User.query.get_by_token(tk)
                 if user:
-                    user_dict.update(user.user2dict4redis())
-                    #user_dict.expire(3600)
+                    self.rdb.set(key, json_encode(user.user2dict4redis()))
+                    self.rdb.expire(key, 3600)
+                    user_dict = self.rdb.get(key)
 
             if user_dict:
-                return QDict(dict(user_dict))
+                return QDict(json_decode(user_dict))
 
         return None
 

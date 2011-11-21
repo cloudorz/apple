@@ -3,7 +3,7 @@
 '''
 
 import os.path
-import ooredis 
+import redis
 
 import tornado.web
 import tornado.httpserver
@@ -69,8 +69,7 @@ class Application(tornado.web.Application):
         # sqlalchemy session 'db'
         self.db_session = (scoped_session(sessionmaker(autoflush=True, bind=create_engine(options.db_uri))))()
         # redis connection
-        #self.redis = redis.Redis(host="localhost", port=6379, db=0)
-        ooredis.connect(host="localhost", port=6379, db=0)
+        self.redis = redis.Redis(host="localhost", port=6379, db=0)
 
 
 def main():
