@@ -4,6 +4,7 @@
 2. create db -> db_sesssion
 3. add some method to Base
 '''
+from itertools import imap, ifilter
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import class_mapper, Query
@@ -59,7 +60,8 @@ def obj_to_dict(self, include=[]):
     '''
     #exclude.append('_sa_instance_state')
     dict_obj = vars(self).copy()
-    [dict_obj.pop(e) for e in dict_obj.keys() if e not in include]
+    #[dict_obj.pop(e) for e in dict_obj.keys() if e not in include]
+    imap(dict_obj.pop, ifilter(lambda e: e not in include, dict_obj.keys()))
        
     return dict_obj
 
