@@ -59,7 +59,7 @@ def obj_to_dict(self, include=[]):
     '''
     #exclude.append('_sa_instance_state')
 
-    return {k:v for k,v in vars(self).items() if k not in include}
+    return {k:v for k,v in vars(self).items() if k in include}
 
 def obj_from_dict(self, data):
     # PS: not contain the user and not method name
