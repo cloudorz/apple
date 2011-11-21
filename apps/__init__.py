@@ -68,8 +68,9 @@ class BaseRequestHandler(tornado.web.RequestHandler):
             if not user_dict:
                 user = User.query.get_by_token(tk)
                 if user:
-                    user_dict.update({'name':user.name, 'phone':user.phone, 'id':user.id,
-                        'is_admin':user.is_admin})
+                    user_dict.update(user.user2dict4redis())
+                    user_dict.expire(3600)
+
             if user_dict:
                 return QDict(dict(user_dict))
 

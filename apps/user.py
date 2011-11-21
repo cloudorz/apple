@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import uuid, datetime, re
+import ooredis
 
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.state import InstanceState
@@ -142,7 +143,11 @@ class AuthHandler(BaseRequestHandler):
             if user and user.authenticate(new_info['password']):
                 user.token = uuid.uuid5(uuid.NAMESPACE_URL, "%s%s" % (user.phone,
                     options.token_secret)).hex
+
                 info = user.user_to_dict_by_auth() # must before save
+                user_dict = ooredis.Dict('users:%s' % user.token)
+                user_dict.update(user.user2dict4redis())
+
                 user.save()
 
                 self.render_json(info) 

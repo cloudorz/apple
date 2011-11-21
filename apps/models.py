@@ -167,6 +167,9 @@ class User(Base):
 
         return info
 
+    def user2dict4redis(self):
+        info = self.to_dict(include=['name', 'phoen', 'id', 'is_admin'])
+
     def get_link(self):
         return "%s%s" % (options.site_uri, self.reverse_uri('user', self.phone))
 
