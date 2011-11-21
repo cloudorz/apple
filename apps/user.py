@@ -2,7 +2,6 @@
 
 import uuid, datetime, re
 import ooredis
-from itertools import imap, ifilter
 
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.state import InstanceState
@@ -55,7 +54,6 @@ class UserHandler(BaseRequestHandler):
 
             user_collection = {
                     'users': [e.user_to_dict(self.current_user) for e in query_users.order_by(q.sort).limit(q.num).offset(q.start)],
-                    #'users': list(imap(lambda e: e.user_to_dict(self.current_user), query_users.order_by(q.sort).limit(q.num).offset(q.start))),
                     'total': total,
                     'link': self.full_uri(query_dict),
                     }
