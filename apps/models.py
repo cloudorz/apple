@@ -11,7 +11,6 @@ from tornado.options import options
 from utils.coredb import BaseQuery, Base
 from utils.escape import json_encode, json_decode
 
-# TODO #2 redis cache the user's loud-id set  and token
 
 class UserQuery(BaseQuery):
 

@@ -2,6 +2,7 @@
 
 import uuid, datetime, re
 import ooredis
+from itertools import imap, ifilter
 
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.state import InstanceState
@@ -53,7 +54,8 @@ class UserHandler(BaseRequestHandler):
                     }
 
             user_collection = {
-                    'users': [e.user_to_dict(self.current_user) for e in query_users.order_by(q.sort).limit(q.num).offset(q.start)],
+                    #'users': [e.user_to_dict(self.current_user) for e in query_users.order_by(q.sort).limit(q.num).offset(q.start)],
+                    'users': imap(lambda e: e.user_to_dict(self.current_user), query_users.order_by(q.sort).limit(q.num).offset(q.start)),
                     'total': total,
                     'link': self.full_uri(query_dict),
                     }
@@ -147,6 +149,7 @@ class AuthHandler(BaseRequestHandler):
                 info = user.user_to_dict_by_auth() # must before save
                 user_dict = ooredis.Dict('users:%s' % user.token)
                 user_dict.update(user.user2dict4redis())
+                user_dict.expire(3600)
 
                 user.save()
 

@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import hashlib, datetime
+from itertools import ifilter, imap
 
 from tornado.web import HTTPError
 
@@ -112,7 +113,8 @@ class SearchLoudHandler(BaseRequestHandler):
                     }
 
             loud_collection = {
-                    'louds': [e.loud_to_dict() for e in query_louds.order_by(q.sort).limit(q.num).offset(q.start)],
+                    #'louds': [e.loud_to_dict() for e in query_louds.order_by(q.sort).limit(q.num).offset(q.start)],
+                    'louds': imap(lambda e: e.loud_to_dict(), query_louds.order_by(q.sort).limit(q.num).offset(q.start)),
                     'total': total,
                     'link': self.full_uri(query_dict),
                     }
@@ -136,7 +138,8 @@ class SearchLoudHandler(BaseRequestHandler):
 
         hasher = hashlib.sha1()
         if 'cur_louds' in self.__dict__:
-            any(hasher.update(e) for e in sorted(loud['id'] for loud in self.cur_louds))
+            #any(hasher.update(e) for e in sorted(loud['id'] for loud in self.cur_louds))
+            any(imap(hasher.update, sorted(imap(lambda loud: loud['id'], self.cur_louds))))
 
         return '"%s"' % hasher.hexdigest()
 
