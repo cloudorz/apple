@@ -25,8 +25,8 @@ from utils.coredb import sql_db
 define('port', default=8888, help="run on the given port", type=int)
 
 #URI
-define('site_uri', default="http://rest.whohelp.me", type=str, help="site uri")
-define('static_uri', default="http://static.whohelp.me", type=str, help="static uri")
+define('site_uri', default="http://n2u.in", type=str, help="site uri") # FIXME wait for ssl go
+define('static_uri', default="http://s.n2u.in", type=str, help="static uri")
 
 #args
 define('er', default=6378137, type=float, help="the earth radius.")
