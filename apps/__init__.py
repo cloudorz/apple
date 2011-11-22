@@ -1,6 +1,6 @@
 # coding: utf-8
 
-import httplib, datetime
+import httplib, datetime#, sys
 
 import tornado.web
 
@@ -67,14 +67,17 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         key = 'users:%s' % tk
 
         if self.is_available_client():
-            return User.query.get_by_token(tk)
-            # FIXME
+            #return User.query.get_by_token(tk)
             user_str = self.rdb.get(key)
             user_dict = user_str and json_decode(user_str)
             if not user_dict:
                 user = User.query.get_by_token(tk)
-                if user:
+		# FIXME bug# user object must be use (liek: user.id etc..) 
+		# the user.user2dict4redis method can work, I don't know why
+                if user and user.id > 0:
+		    #print >> sys.stderr, user
                     user_dict = user.user2dict4redis()
+		    #print >> sys.stderr, user_dict
                     self.rdb.set(key, json_encode(user_dict))
                     self.rdb.expire(key, 3600)
 

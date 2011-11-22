@@ -146,8 +146,9 @@ class AuthHandler(BaseRequestHandler):
                     options.token_secret)).hex
 
                 info = user.user_to_dict_by_auth() # must before save
-                self.rdb.set('users:%s' % user.token, json_encode(user.user2dict4redis()))
-                self.rdb.expire(3600)
+		key = 'users:%s' % user.token
+                self.rdb.set(key, json_encode(user.user2dict4redis()))
+                self.rdb.expire(key, 3600)
 
                 user.save()
 
