@@ -192,6 +192,8 @@ class Loud(Base):
     content = Column(String(70))
     lon = Column(Float, default=0)
     lat = Column(Float, default=0)
+    flon = Column(Float, default=0, nullable=True)
+    flat = Column(Float, default=0, nullable=True)
     address = Column(String(30), nullable=True)
     grade = Column(Integer, default=5)
     block = Column(Boolean, default=False)
@@ -223,7 +225,8 @@ class Loud(Base):
         return self.owner_by(u) or u.is_admin
     
     def loud_to_dict(self):
-        loud_dict = self.to_dict(include=['content', 'grade', 'address', 'lat', 'lon', 'created'])
+        loud_dict = self.to_dict(include=['content', 'grade', 'address', 'lat', 'lon', 'flat',
+            'flon', 'created'])
         loud_dict['user'] = self.user.user_to_dict_by_other()
         
         loud_dict['id'] = self.get_urn_id()
