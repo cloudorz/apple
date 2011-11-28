@@ -95,7 +95,7 @@ class LoudHandler(BaseRequestHandler):
             res = None, None
         else:
             geo = self.dejson(rsp.body)
-            res = geo.lat, geo.lon
+            res = geo.get('lat', None), geo.get('lon', None)
 
         return res
 
