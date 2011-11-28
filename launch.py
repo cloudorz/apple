@@ -27,6 +27,7 @@ define('port', default=8888, help="run on the given port", type=int)
 #URI
 define('site_uri', default="https://n2u.in", type=str, help="site uri") 
 define('static_uri', default="http://s.n2u.in", type=str, help="static uri")
+define('geo_uri', default="http://l.n2u.in", type=str, help="locaiton and address parser uri")
 
 #args
 define('er', default=6378137, type=float, help="the earth radius.")

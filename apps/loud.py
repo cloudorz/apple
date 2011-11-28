@@ -1,8 +1,10 @@
 # coding: utf-8
 
-import hashlib, datetime
+import hashlib, datetime, sys
 
+import tornado.httpclient
 from tornado.web import HTTPError
+from tornado.options import options
 
 from apps import BaseRequestHandler
 from apps.models import User, Loud
@@ -32,6 +34,8 @@ class LoudHandler(BaseRequestHandler):
             raise HTTPError(412)
 
         data = self.get_data()
+        self.wrap_mars_addr(data)
+        print >> sys.stderr, data
 
         loud = Loud()
         loud.user_id = self.current_user.id
@@ -67,6 +71,44 @@ class LoudHandler(BaseRequestHandler):
 
     def get_recipient(self, lid):
         return Loud.query.get_by_key(lid)
+
+    def wrap_mars_addr(self, data):
+
+        assert 'lat' in data and 'lon' in data, "The data must have location infomation"
+        lat, lon = data['lat'], data['lon']
+
+        flat, flon = self.e2m(lat, lon)
+        if flat and flon:
+            data['flat'], data['flon'] = flat, flon
+            addr = self.m2addr(flat, flon)
+
+            if addr:
+                data['address'] = addr
+
+    def e2m(self, lat, lon):
+        mars_location_uri = "%s%s" % (options.geo_uri, '/e2m/%f,%f' % (lat, lon))
+        http = tornado.httpclient.HTTPClient()
+        try:
+            rsp = http.fetch(mars_location_uri)
+        except tornado.httpclient.HTTPError, e:
+            res = None, None
+        else:
+            geo = self.dejson(rsp.body)
+            res = geo.lat, geo.lon
+
+        return res
+
+    def m2addr(self, lat, lon):
+        mars_addr_uri = "%s%s" % (options.geo_uri, '/m2addr/%f,%f' % (lat, lon))
+        http = tornado.httpclient.HTTPClient()
+        try:
+            rsp = http.fetch(mars_addr_uri)
+        except tornado.httpclient.HTTPError, e:
+            res = None
+        else:
+            res = rsp.body
+
+        return res
 
 
 class SearchLoudHandler(BaseRequestHandler):
@@ -139,6 +181,7 @@ class SearchLoudHandler(BaseRequestHandler):
             any(hasher.update(e) for e in sorted(loud['id'] for loud in self.cur_louds))
 
         return '"%s"' % hasher.hexdigest()
+
 
 class UpdatedLoudHandler(BaseRequestHandler):
 
