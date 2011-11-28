@@ -83,7 +83,8 @@ class LoudHandler(BaseRequestHandler):
             addr = self.m2addr(flat, flon)
 
             if addr:
-                data['address'] = addr
+                # addrr like 'China,Zhejiang,Hangzhou,xihuqu#yugu.rd218'
+                policital, data['address'] = addr.split('#')
 
     def e2m(self, lat, lon):
         mars_location_uri = "%s%s" % (options.geo_uri, '/e2m/%f,%f' % (lat, lon))
