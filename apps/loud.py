@@ -35,7 +35,6 @@ class LoudHandler(BaseRequestHandler):
 
         data = self.get_data()
         self.wrap_mars_addr(data)
-        print >> sys.stderr, data
 
         loud = Loud()
         loud.user_id = self.current_user.id
