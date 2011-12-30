@@ -1,7 +1,6 @@
 # coding: utf-8
 
 import uuid, datetime, re
-import ooredis
 
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.state import InstanceState
