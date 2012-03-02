@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from tornado import httpclient, escape, ioloop
+from tornado.options import options
 
 __all__ = ['sms_send', 'ret_code2desc']
 
@@ -43,7 +44,7 @@ def sms_send(phone, msg, msg_type):
     msg_content = get_sms_template(msg_type) % msg
 
     # sms api uri
-    uri = u"http://utf8.sms.webchinese.cn/?Uid=cloud&Key=q12wer43ui8765tyop09&smsMob=%(phone)s&smsText=%(msg)s"
+    uri = options.sms_uri
     uri = uri % {'phone': phone, 'msg': escape.url_escape(escape.utf8(msg_content))}
 
     http_client = httpclient.HTTPClient()

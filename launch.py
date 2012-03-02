@@ -25,25 +25,28 @@ from utils.coredb import sql_db
 define('port', default=8888, help="run on the given port", type=int)
 
 #URI
-define('site_uri', default="https://n2u.in", type=str, help="site uri") 
-define('static_uri', default="http://s.n2u.in", type=str, help="static uri")
-define('geo_uri', default="http://l.n2u.in", type=str, help="locaiton and address parser uri")
+# P.S: FIXME set your args 
+#
+define('site_uri', default="<uri for your service>", type=str, help="site uri") 
+define('static_uri', default="<uri for static files>", type=str, help="static uri")
+define('geo_uri', default="<uri for parse the geo data>", type=str, help="locaiton and address parser uri")
+define('sms_uri', default="http://utf8.sms.webchinese.cn/?Uid=<your-id>&Key=<your-key>&smsMob=%(phone)s&smsText=%(msg)s", type=str, help="sms servcie uri")
 
 #args
 define('er', default=6378137, type=float, help="the earth radius.")
 define('cr', default=3000, type=float, help="the cycle radius.")
 
 # database
-define('db_uri', default="mysql://root:123@localhost/apple?charset=utf8", type=str, help="connect to mysql")
+define('db_uri', default="mysql://<mysql-user>:<mysql-passwd>@<mysql-host>/<db-name>?charset=utf8", type=str, help="connect to mysql")
 
 # avatar dir  path
-define('path', default="/data/web/static/", type=str, help="recommend default one")
+define('path', default="/path/to/your/static/", type=str, help="recommend default one")
 
 # app key
 define("app_name", default="lebang", help="app name")
-define("app_key", default="20111007001", help="app key")
-define("app_secret", default="9e6306f58b705e44d585d61e500d884d", help="app secret")
-define("token_secret", default="bc400ed500605c49a035eead0ee5ef41", help="token secret")
+define("app_key", default="<your app key>", help="app key")
+define("app_secret", default="xxxxxxxxxxxxxxxxxx", help="app secret")
+define("token_secret", default="xxxxxxxxxxxxxxxxxxxx", help="token secret")
 
 
 # main logic
@@ -62,7 +65,7 @@ class Application(tornado.web.Application):
         settings = dict(
                 static_path=os.path.join(os.path.dirname(__file__), 'static'),
                 xsrf_cookies=False,
-                cookie_secret='c8f48f9777f411e09fcd109add59054a',
+                cookie_secret='cuf48f9777f411e12fcd109edd52054a',
                 debug=False,
                 )
         super(Application, self).__init__(handlers, **settings)
